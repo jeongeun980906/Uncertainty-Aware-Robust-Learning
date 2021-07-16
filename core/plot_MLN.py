@@ -7,6 +7,9 @@ import os
 import json
 from scipy.stats import kendalltau
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 def avg_total_variance(wm,tm):
     labels=wm.shape[0]
     temp=np.sum(abs(wm-tm),axis=1)
@@ -36,10 +39,7 @@ def plot_res_once(train_acc,test_acc,args,DIR):
     plt.legend(handles=[chTr,chTe],loc='lower center',shadow=True,ncol=2,fontsize=10.5)
     plt.xlabel('Number of Epochs',fontsize=15)
     plt.ylabel('Accuracy (%)',fontsize=13)
-    if args.mode=='mixup':
-        plt.title('{}_{}'.format(args.mode,args.mixup))
-    else:
-        plt.title('%d%% %s'%(errRate*100,errType),fontsize=13)
+    plt.title('%d%% %s'%(errRate*100,errType),fontsize=13)
     plt.savefig(save_dir)
     print ("%s saved."%(save_dir))
     
@@ -136,9 +136,15 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
     log2=np.transpose(log2)
     log=np.transpose(log)
     fig = plt.figure(figsize=(9,7))
-    plt.suptitle('TREC {} {} Mixture Weight'.format(args.mode,args.ER),fontsize=15)
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
+    NOISE_TYPE= args.mode
+    NOISE_TYPE=NOISE_TYPE.capitalize()
+    plt.suptitle('{} {} {}\% Mixture Weight'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
     plt.subplot(2, 1, 1) 
-    plt.title('delta mixture weight',fontsize=13)
+    plt.title('Delta Mixture Weight',fontsize=18)
+    plt.xlabel('Class',fontsize=15)
     if args.data != 'cifar100':
         # if args.mode=='symmetric':
         #     plt.ylim([0,0.3])
@@ -146,7 +152,7 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         clean=np.take(log,NOT_NOISE,axis=1)
         noisy=np.take(log,IS_NOISE,axis=1)
         for i in range(n):
-            plt.plot(log[i,:],label='pi({})-pi({})'.format(i+1,i+2),linewidth=1)
+            plt.plot(log[i,:],label='$\pi({})-\pi({})$'.format(i+1,i+2),linewidth=1)
         plt.plot(NOT_NOISE,clean[0,:],'bo',markersize=5,label='clean label')
         plt.plot(IS_NOISE,noisy[0,:],'ro',markersize=5,label='noisy label')
         if args.mode not in ['symmetric','asymmetric','fairflip']:
@@ -155,22 +161,23 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         else:
             plt.plot(NOT_NOISE,clean[1,:],'bo',markersize=5)
             plt.plot(IS_NOISE,noisy[1,:],'ro',markersize=5)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.)
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
         plt.tight_layout()
     else:
         for i in range(n):
-            plt.plot(x,log[i,:],label='pi({})-pi({})'.format(i+1,i+2),linewidth=1)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.)
+            plt.plot(x,log[i,:],label='$\pi({})-\pi({})$'.format(i+1,i+2),linewidth=1)
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
         plt.tight_layout()        
     plt.subplot(2, 1, 2) 
     # print(log)
-    plt.title('mixture weight',fontsize=13)
+    plt.title('Mixture Weight',fontsize=18)
+    plt.xlabel('Class',fontsize=15)
     if args.data !='cifar100':
         plt.xticks([i for i in range(labels)])
         clean2=np.take(log2,NOT_NOISE,axis=1)
         noisy2=np.take(log2,IS_NOISE,axis=1)
         for i in range(n+1):
-            plt.plot(log2[i,:],label='pi({})'.format(i+1),linewidth=1)
+            plt.plot(log2[i,:],label='$\pi({})$'.format(i+1),linewidth=1)
         plt.plot(NOT_NOISE,clean2[0,:],'bo',markersize=5,label='clean label')
         plt.plot(IS_NOISE,noisy2[0,:],'ro',markersize=5,label='noisy label')
         if args.mode not in ['symmetric','asymmetric','fairflip']:
@@ -180,12 +187,12 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         else:
             plt.plot(NOT_NOISE,clean2[1,:],'bo',markersize=5)
             plt.plot(IS_NOISE,noisy2[1,:],'ro',markersize=5)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.)
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
         plt.tight_layout()
     else:
         for i in range(n+1):
-            plt.plot(x,log2[i,:],label='pi({})'.format(i+1),linewidth=1)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.)
+            plt.plot(x,log2[i,:],label='$\pi({})$'.format(i+1),linewidth=1)
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
         plt.tight_layout()        
     try:
         print('dir made')
@@ -224,81 +231,90 @@ def plot_mu(out,args,true_noise,labels=10,ratio1=1,ratio2=1):
     img3=np.round(img3,2)
     img4=np.round(img4,2)
     img7=np.round(true_noise,2)
-
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
+    NOISE_TYPE= args.mode
+    NOISE_TYPE=NOISE_TYPE.capitalize()
     if args.data=='cifar100':
-        fig,((ax1,ax2), (ax3,ax4)) = plt.subplots(2,2, figsize=(20, 20))
-        fig.suptitle('{} {} {} Predicted Distribution \n'.format(args.data,args.mode,args.ER),fontsize=30)
-        ax1.set_title('1st largest distribution',fontsize=25)
-        img = sns.heatmap(img1,ax=ax1)
-        ax1.set_xlabel('predicted probablity',fontsize=20)
-        ax1.set_ylabel('predicted class',fontsize=20)
+        fig,(ax3,ax4) = plt.subplots(2,1, figsize=(12, 20))
+        fig.suptitle('{} {} {}\% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=30)
+        # ax1.set_title('1st largest distribution',fontsize=25)
+        # img = sns.heatmap(img1,ax=ax1)
+        # ax1.set_xlabel('predicted probablity',fontsize=20)
+        # ax1.set_ylabel('predicted class',fontsize=20)
         
-        ax2.set_title('2nd largest distribution',fontsize=25)
-        img = sns.heatmap(img2,ax=ax2)
-        ax2.set_xlabel('predicted probablity',fontsize=20)
-        ax2.set_ylabel('predicted class',fontsize=20)
-        ax3.set_title('weighted distribution',fontsize=25)
+        # ax2.set_title('2nd largest distribution',fontsize=25)
+        # img = sns.heatmap(img2,ax=ax2)
+        # ax2.set_xlabel('predicted probablity',fontsize=20)
+        # ax2.set_ylabel('predicted class',fontsize=20)
+        ax3.set_title('Predicted',fontsize=25)
         img = sns.heatmap(img3,ax=ax3)
-        ax3.set_xlabel('predicted probablity',fontsize=20)
-        ax3.set_ylabel('predicted clas',fontsize=20)
+        ax3.set_xlabel('Clean Label',fontsize=20)
+        ax3.set_ylabel('Noisy Label',fontsize=20)
 
         ax4.set_title('True',fontsize=25)
         img = sns.heatmap(img7,ax=ax4)
-        ax4.set_xlabel('predicted probablity',fontsize=20)
-        ax4.set_ylabel('predicted class',fontsize=20)
+        ax4.set_xlabel('Clean Label',fontsize=20)
+        ax4.set_ylabel('Noisy Label',fontsize=20)
         plt.tight_layout()
         fig.savefig(DIR1)
 
-        fig, (ax1,ax2) = plt.subplots(1, 2, figsize=(16, 8))
-        fig.suptitle('{}_{}_{}'.format(args.data,args.mode,args.ER),fontsize=20)
-        ax1.set_title('Confusion matrix')
-        img = sns.heatmap(img4,ax=ax1)
-        ax1.set_xlabel('predicted class',fontsize=10)
-        ax1.set_ylabel('labels',fontsize=10)
+        # fig, (ax1,ax2) = plt.subplots(1, 2, figsize=(16, 8))
+        # fig.suptitle('{}_{}_{}'.format(args.data,args.mode,args.ER),fontsize=20)
+        # ax1.set_title('Confusion matrix')
+        # img = sns.heatmap(img4,ax=ax1)
+        # ax1.set_xlabel('predicted class',fontsize=10)
+        # ax1.set_ylabel('labels',fontsize=10)
         
-        ax2.set_title('True')
-        img = sns.heatmap(img7,ax=ax2)
+        # ax2.set_title('True')
+        # img = sns.heatmap(img7,ax=ax2)
     else:
-        fig,((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 16))
-        #fig, (ax3,ax4) = plt.subplots(2, 1, figsize=(9, 16))
-        fig.suptitle('{} {} {} Predicted Distribution \n'.format(args.data,args.mode,args.ER),fontsize=25)
-        ax1.set_title('1st largest distribution',fontsize=20)
-        img = sns.heatmap(img1,ax=ax1,annot=True)
-        ax1.set_xlabel('predicted probablity',fontsize=13)
-        ax1.set_ylabel('predicted class',fontsize=13)
+        #fig,((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 16))
+        fig, (ax3,ax4) = plt.subplots(2, 1, figsize=(6, 12))
+        fig.suptitle('{} {} {}\% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
+        # ax1.set_title('1st largest distribution',fontsize=20)
+        # img = sns.heatmap(img1,ax=ax1,annot=True)
+        # ax1.set_xlabel('predicted probablity',fontsize=13)
+        # ax1.set_ylabel('predicted class',fontsize=13)
         
-        ax2.set_title('2nd largest distribution',fontsize=20)
-        img = sns.heatmap(img2,ax=ax2,annot=True)
-        ax2.set_xlabel('predicted probablity',fontsize=13)
-        ax2.set_ylabel('predicted class',fontsize=13)
+        # ax2.set_title('2nd largest distribution',fontsize=20)
+        # img = sns.heatmap(img2,ax=ax2,annot=True)
+        # ax2.set_xlabel('predicted probablity',fontsize=13)
+        # ax2.set_ylabel('predicted class',fontsize=13)
 
-        ax3.set_title('weighted distribution',fontsize=20)
+        ax3.set_title('Predicted',fontsize=18)
         img = sns.heatmap(img3,ax=ax3,annot=True)
-        ax3.set_xlabel('predicted probablity',fontsize=13)
-        ax3.set_ylabel('predicted clas',fontsize=13)
+        ax3.set_xlabel('Clean Label',fontsize=15)
+        ax3.set_ylabel('Noise Label',fontsize=15)
 
-        ax4.set_title('True',fontsize=20)
+        ax4.set_title('True',fontsize=18)
         img = sns.heatmap(img7,ax=ax4,annot=True)
-        ax4.set_xlabel('predicted probablity',fontsize=13)
-        ax4.set_ylabel('predicted class',fontsize=13)
+        ax4.set_xlabel('Clean Label',fontsize=15)
+        ax4.set_ylabel('Noisy Label',fontsize=15)
         plt.tight_layout()
         fig.savefig(DIR1)
 
-        fig, (ax1,ax2) = plt.subplots(1, 2, figsize=(16, 8))
-        fig.suptitle('{}_{}_{}'.format(args.data,args.mode,args.ER),fontsize=20)
-        ax1.set_title('Confusion matrix')
-        img = sns.heatmap(img4,ax=ax1,annot=True)
-        ax1.set_xlabel('predicted class',fontsize=10)
-        ax1.set_ylabel('labels',fontsize=10)
+    #     fig, (ax1,ax2) = plt.subplots(1, 2, figsize=(16, 8))
+    #     fig.suptitle('{}_{}_{}'.format(args.data,args.mode,args.ER),fontsize=20)
+    #     ax1.set_title('Confusion matrix')
+    #     img = sns.heatmap(img4,ax=ax1,annot=True)
+    #     ax1.set_xlabel('predicted class',fontsize=10)
+    #     ax1.set_ylabel('labels',fontsize=10)
         
-        ax2.set_title('True')
-        img = sns.heatmap(img7,ax=ax2,annot=True)
-    fig.savefig(DIR2)
-    print(img4)
+    #     ax2.set_title('True')
+    #     img = sns.heatmap(img7,ax=ax2,annot=True)
+    # fig.savefig(DIR2)
+    # print(img4)
 
 def plot_hist(clean_eval,ambiguous_eval,args):
     plt.figure(figsize=(8,5))
-    plt.title('CIFAR10 {} {} Aleatoric Uncertainty Histogram \n'.format(args.mode,args.ER),fontsize=10)
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
+    NOISE_TYPE= args.mode
+    NOISE_TYPE=NOISE_TYPE.capitalize()
+    plt.title('{} {} {}\% Aleatoric Uncertainty Histogram \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=10)
     plt.hist(clean_eval['alea_'], color='b',label='clean',bins=100, alpha=0.5)
     plt.hist(ambiguous_eval['alea_'][:10000],color='r',label='ambiguous',bins=100, alpha=0.5)
     plt.legend()
@@ -348,15 +364,21 @@ def plot_pi2(out,out2,out3,out4,args,N):
             log4[i]=mean_dist
         except:
             log4[i]=np.zeros(n+1)
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
+    NOISE_TYPE= args.mode
+    NOISE_TYPE=NOISE_TYPE.capitalize()
     fig = plt.figure(figsize=(12,8))
-    plt.suptitle('DirtyCIFAR10 {} {} Mixture Weight'.format(args.mode,args.ER),fontsize=15)
+    plt.suptitle('{} {} {}\% Mixture Weight\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=18)
     plt.subplot(2, 2, 1) 
-    plt.title('delta mixture weight clean',fontsize=13)
+    plt.title('Delta Mixture Weight Clean',fontsize=15)
     plt.xticks([i for i in range(10)])
+    plt.xlabel("Class",fontsize=12)
     clean=np.take(log,NOT_NOISE,axis=0)
     noisy=np.take(log,IS_NOISE,axis=0)
     for i in range(n):
-        plt.plot(log[:,i],label='pi({})-pi({})'.format(i+1,i+2),linewidth=1)
+        plt.plot(log[:,i],label='$\pi({})-\pi({})$'.format(i+1,i+2),linewidth=1)
     plt.plot(log[:,0],'bo',markersize=5,label='clean label')
     if args.mode not in ['symmetric','asymmetric','fairflip']:
         plt.plot(log[:,n-2],'bo',markersize=5)
@@ -366,12 +388,13 @@ def plot_pi2(out,out2,out3,out4,args,N):
         #plt.plot(IS_NOISE,noisy[:,1],'ro',markersize=5)
 
     plt.subplot(2, 2, 2) 
-    plt.title('delta mixture weight ambiguous',fontsize=13)
+    plt.title('Delta Mixture Weight Ambiguous',fontsize=15)
     plt.xticks([i for i in range(10)])
+    plt.xlabel("Class",fontsize=12)
     clean=np.take(log3,NOT_NOISE,axis=0)
     noisy=np.take(log3,IS_NOISE,axis=0)
     for i in range(n):
-        plt.plot(log3[:,i],label='pi({})-pi({})'.format(i+1,i+2),linewidth=1)
+        plt.plot(log3[:,i],label='$\pi({})-\pi({})$'.format(i+1,i+2),linewidth=1)
     plt.plot(NOT_NOISE,clean[:,0],'bo',markersize=5,label='clean label')
     plt.plot(IS_NOISE,noisy[:,0],'ro',markersize=5,label='noisy label')
     if args.mode not in ['symmetric','asymmetric','fairflip']:
@@ -385,12 +408,12 @@ def plot_pi2(out,out2,out3,out4,args,N):
 
     plt.subplot(2, 2, 3) 
     # print(log)
-    plt.title('mixture weight clean',fontsize=13)
+    plt.title('Mixture Weight Clean',fontsize=13)
     plt.xticks([i for i in range(10)])
     clean2=np.take(log2,NOT_NOISE,axis=0)
     noisy2=np.take(log2,IS_NOISE,axis=0)
     for i in range(n+1):
-        plt.plot(log2[:,i],label='pi({})'.format(i+1),linewidth=1)
+        plt.plot(log2[:,i],label='$\pi({})$'.format(i+1),linewidth=1)
     plt.plot(log2[:,0],'bo',markersize=5,label='clean label')
     #plt.plot(IS_NOISE,noisy2[:,0],'ro',markersize=5,label='noisy label')
     if args.mode not in ['symmetric','asymmetric','fairflip']:
@@ -403,12 +426,12 @@ def plot_pi2(out,out2,out3,out4,args,N):
 
     plt.subplot(2, 2, 4) 
     # print(log)
-    plt.title('mixture weight ambiguous',fontsize=13)
+    plt.title('Mixture Weight Ambiguous',fontsize=13)
     plt.xticks([i for i in range(10)])
     clean2=np.take(log4,NOT_NOISE,axis=0)
     noisy2=np.take(log4,IS_NOISE,axis=0)
     for i in range(n+1):
-        plt.plot(log4[:,i],label='pi({})'.format(i+1),linewidth=1)
+        plt.plot(log4[:,i],label='$\pi({})$'.format(i+1),linewidth=1)
     plt.plot(NOT_NOISE,clean2[:,0],'bo',markersize=5,label='clean label')
     plt.plot(IS_NOISE,noisy2[:,0],'ro',markersize=5,label='noisy label')
     if args.mode not in ['symmetric','asymmetric','fairflip']:
@@ -458,9 +481,13 @@ def plot_mu2(out,out2,true_noise,args):
     img8=np.round(img8,2)
     img9=np.round(true_noise,2)
     img10=np.eye(10)
-
-    fig, ((ax3,ax4),(ax7,ax8)) = plt.subplots(2, 2, figsize=(16, 16))
-    # fig.suptitle('DirtyCIFAR10 {} {} Predicted Distribution \n'.format(args.mode,args.ER),fontsize=30)
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
+    NOISE_TYPE= args.mode
+    NOISE_TYPE=NOISE_TYPE.capitalize()
+    fig, ((ax3,ax4),(ax7,ax8)) = plt.subplots(2, 2, figsize=(12, 12))
+    fig.suptitle('{} {} {}\% Transition Matrix \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
     # ax1.set_title('1st largest distribution clean',fontsize=25)
     # img = sns.heatmap(img1,ax=ax1,annot=True)
     # ax1.set_xlabel('predicted probablity',fontsize=20)
@@ -471,15 +498,15 @@ def plot_mu2(out,out2,true_noise,args):
     # ax2.set_xlabel('predicted probablity',fontsize=20)
     # ax2.set_ylabel('predicted class',fontsize=20)
 
-    ax3.set_title('weighted distribution',fontsize=20)
+    ax3.set_title('Clean - Predicted',fontsize=18)
     img = sns.heatmap(img3,ax=ax3,annot=True)
-    ax3.set_xlabel('predicted probablity',fontsize=13)
-    ax3.set_ylabel('predicted clas',fontsize=13)
+    ax3.set_xlabel('Clean Label',fontsize=15)
+    ax3.set_ylabel('Noisy Label',fontsize=15)
 
-    ax4.set_title('True',fontsize=20)
+    ax4.set_title('Clean - True',fontsize=18)
     img = sns.heatmap(img7,ax=ax4,annot=True)
-    ax4.set_xlabel('predicted probablity',fontsize=13)
-    ax4.set_ylabel('predicted class',fontsize=13)
+    ax4.set_xlabel('Clean Label',fontsize=15)
+    ax4.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
 
     # ax5.set_title('1st largest distribution ambiguous',fontsize=25)
@@ -492,37 +519,37 @@ def plot_mu2(out,out2,true_noise,args):
     # ax6.set_xlabel('predicted probablity',fontsize=20)
     # ax6.set_ylabel('predicted class',fontsize=20)
 
-    ax7.set_title('Weighted distribution ambiguous',fontsize=20)
+    ax7.set_title('Ambiguous - Predicted',fontsize=18)
     img = sns.heatmap(img7,ax=ax7,annot=True)
-    ax7.set_xlabel('predicted probablity',fontsize=13)
-    ax7.set_ylabel('predicted clas',fontsize=13)
+    ax7.set_xlabel('Clean Label',fontsize=15)
+    ax7.set_ylabel('Noisy Label',fontsize=15)
 
-    ax8.set_title('True ambiguous',fontsize=20)
+    ax8.set_title('Ambiguous - True',fontsize=18)
     img = sns.heatmap(img9,ax=ax8,annot=True)
-    ax8.set_xlabel('predicted probablity',fontsize=13)
-    ax8.set_ylabel('predicted class',fontsize=13)
+    ax8.set_xlabel('Clean Label',fontsize=15)
+    ax8.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
     fig.savefig(DIR1)
 
-    fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 14))
-    fig.suptitle('DirtyCIFAR10 {} {} confusion'.format(args.mode,args.ER),fontsize=20)
-    ax1.set_title('Confusion matrix clean')
-    img = sns.heatmap(img4,ax=ax1,annot=True)
-    ax1.set_ylabel('predicted class',fontsize=10)
-    ax1.set_xlabel('labels',fontsize=10)
+    # fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 14))
+    # fig.suptitle('DirtyCIFAR10 {} {} confusion'.format(args.mode,args.ER),fontsize=20)
+    # ax1.set_title('Confusion matrix clean')
+    # img = sns.heatmap(img4,ax=ax1,annot=True)
+    # ax1.set_ylabel('predicted class',fontsize=10)
+    # ax1.set_xlabel('labels',fontsize=10)
     
-    ax2.set_title('True clean')
-    img = sns.heatmap(img10,ax=ax2,annot=True)
+    # ax2.set_title('True clean')
+    # img = sns.heatmap(img10,ax=ax2,annot=True)
 
-    ax3.set_title('Confusion matrix ambiguous')
-    img = sns.heatmap(img8,ax=ax3,annot=True)
-    ax3.set_ylabel('predicted class',fontsize=10)
-    ax3.set_xlabel('labels',fontsize=10)
+    # ax3.set_title('Confusion matrix ambiguous')
+    # img = sns.heatmap(img8,ax=ax3,annot=True)
+    # ax3.set_ylabel('predicted class',fontsize=10)
+    # ax3.set_xlabel('labels',fontsize=10)
     
-    ax4.set_title('True ambiguous')
-    img = sns.heatmap(img9,ax=ax4,annot=True)
-    plt.tight_layout()
-    fig.savefig(DIR2)
+    # ax4.set_title('True ambiguous')
+    # img = sns.heatmap(img9,ax=ax4,annot=True)
+    # plt.tight_layout()
+    # fig.savefig(DIR2)
     
 
 def plot_sigma2(out,out2,args):
@@ -562,15 +589,18 @@ def plot_sigma2(out,out2,args):
     noisy2=np.take(log2,IS_NOISE,axis=0)
     MIN_SIG =np.min(log)
     MAX_SIG=np.max(log2)
+    NAME=args.data
+    NAME=NAME.upper()
+    NOISE_RATE=int(args.ER*100)
     fig = plt.figure(figsize=(8, 5))
-    plt.title('DirtyCIFAR10 {} {} Aleatoric Uncertainty \n'.format(args.mode,args.ER),fontsize=10)
+    plt.title('{} {} {}\% Aleatoric Uncertainty \n'.format(NAME,args.mode,NOISE_RATE),fontsize=10)
     plt.xticks(x)
     if args.mode=='asymmetric':
         plt.ylim((MIN_SIG-0.005,MAX_SIG+0.003))
     else:    
         plt.ylim((MIN_SIG-0.02,MAX_SIG+0.01))
     plt.xlabel("Class",fontsize=10)
-    plt.ylabel("Alea mean",fontsize=10)
+    plt.ylabel("Alea Mean",fontsize=10)
     plt.bar(x,log, width=0.4, align='edge', label='clean instance',color='lightskyblue')
     plt.plot(x_1,log,'bo',markersize=5)
     #plt.plot(IS_NOISE,noisy,'ro',markersize=5)

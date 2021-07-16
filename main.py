@@ -52,7 +52,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch', type=int,default=200,help='epoch')
 
     # Adaptive ratio schedular
-    parser.add_argument('--ratio_schedular', type=int,default=0,help='adaptive ratio schedular')
+    parser.add_argument('--tunner', type=int,default=0,help='adaptive ratio schedular')
     
     # For dirtycifar10 cutmix rate
     parser.add_argument('--alpha', type=float,default=0.5,help='for mixing')
@@ -82,13 +82,22 @@ if __name__ == '__main__':
                     'values': [0.01]
                 }
             }
+            elif args.data=='trec':
+                param_dict = {
+                'ratio1': {
+                    'values': [1,0.5,0.1,0.01,0.05,0.001,0.0]
+                },
+                'ratio2': {
+                    'values': [0.16666]
+                }
+            }
             else:
                 param_dict = {
                 'ratio1': {
-                    'values': [0.1,5,10,1,0.5,0.0]
+                    'values': [0.1,5,10,1,0.5,0.0,0.05]
                 },
                 'ratio2': {
-                    'values': [0.1]
+                    'values': [1]
                 }
             }
             sweep_config = {

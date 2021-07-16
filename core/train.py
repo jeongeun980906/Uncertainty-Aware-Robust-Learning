@@ -26,7 +26,7 @@ def build_model(args,device,trec_config=None):
     if DATASET=='mnist' or DATASET=='dirty_mnist':
         model = MixtureLogitNetwork_cnn2(name='mln',x_dim=[1,28,28],k_size=3,c_dims=[32,64,128],p_sizes=[2,2,2],
                             h_dims=[128,64],y_dim=10,USE_BN=False,k=10,
-                            sig_min=1.0,sig_max=None, 
+                            sig_min=1.0,sig_max=10, 
                             mu_min=-1,mu_max=+1,SHARE_SIG=True).to(device)
         summary_str,summary = summary_string(model,input_size=(1,28,28),device=device)
         print("network")
@@ -207,6 +207,8 @@ def build_dataset(args):
             transition_matrix=train.actual_noise_rate
             test_iter = [torch.utils.data.DataLoader(test,batch_size=BATCH_SIZE,shuffle=True,num_workers=0)]
         trec_config=None
+    else:
+        test_iter = [test_iter]
     config={
         "input_size":input_size,"num_classes":num_classes,"num":num,'transition_matrix':transition_matrix
     }

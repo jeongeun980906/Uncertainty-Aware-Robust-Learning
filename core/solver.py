@@ -5,8 +5,8 @@ from core.plot_MLN import *
 from core.MLN_loss import mace_loss
 from core.MLN_eval import func_eval,test_eval,func_eval2
 import torch.optim as optim
-
 import os
+from core.tunner import lambda_tunner
 def load(args):
     args=args
     device='cuda'
@@ -47,22 +47,27 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     data_size=dataset_config['input_size']
     ratio1=config['ratio1']
     ratio2=config['ratio2']
+
     if args.sweep:
         DIR='./res/sweep/{}_{}_{}/'.format(args.data,args.mode,args.ER)
         cDIR = './ckpt/sweep/{}_{}_{}/'.format(args.data,args.mode,args.ER)
+        txtName=(DIR+'{}_{}_{}_log.txt'.format(args.id,ratio1,ratio2))
     else:
         DIR = './res/normal/'+str(args.data)+'_'+str(args.mode)+'_'+str(args.ER)+'/'
         cDIR = './ckpt/normal/{}_{}_{}/'.format(args.data,args.mode,args.ER)
+        txtName = (DIR+str(args.id)+'_log.txt')
     try:
         print('dir made')
         os.mkdir(DIR)
         os.mkdir(cDIR)
     except FileExistsError:
         pass
-    if args.sweep:
-        txtName=(DIR+'{}_{}_{}_log.txt'.format(args.id,ratio1,ratio2))
-    else:
-        txtName = (DIR+str(args.id)+'_log.txt')
+
+    if args.tunner:
+        print('use lambda tunner')
+        tunner = lambda_tunner(int(dataset_config['num_classes']))
+        ratio1=tunner[args.data][0]
+        ratio2 = tunner[args.data][1]
     f = open(txtName,'w') # Open txt file
     print_n_txt(_f=f,_chars='Text name: '+txtName)
     print_n_txt(_f=f,_chars=str(args))
@@ -70,13 +75,17 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
         #optimizer = optim.Adam(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=args.lr_rate, step_size=1000)
+    elif args.data=='mnist':
+        optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[3,6,9,12,15,18], gamma=args.lr_rate)
     else:
         optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
-        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.lr_step, gamma=args.lr_rate)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60,90,120,150,180], gamma=args.lr_rate)
     
     MLN.train()
     EPOCHS = args.epoch
     train_acc, test_acc = [], []
+    tunner_rate=20
     for epoch in range(EPOCHS):
         loss_sum = 0.0
         #time.sleep(1)
@@ -97,8 +106,6 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
             optimizer.step() # optimizer update
             # Track losses
             loss_sum += loss
-            if args.data=='trec':
-                scheduler.step()
         scheduler.step()
         loss_avg = loss_sum/len(train_iter)
         train_res = func_eval(MLN,train_iter,data_size,device)
@@ -109,7 +116,7 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
                     (train_res['alea'],train_res['epis'],train_res['pi_entropy'], train_res['top2_pi'],\
                     test_res['alea'],test_res['epis'],test_res['pi_entropy'],test_res['top2_pi']))
         print_n_txt(_f=f,_chars=strTemp)
-        print_n_txt(_f=f,_chars=strTemp2)        
+        print_n_txt(_f=f,_chars=strTemp2)          
         if args.sweep or args.wandb:
             wandb.log({"loss": loss_avg,
                         "train_acc": train_res['val_accr'],
@@ -136,7 +143,7 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
             plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
             var=avg_total_variance(out['D3'],transition_matrix)
             rank=kendall_tau(out['D3'],transition_matrix)
-            strtemp='avarage total variance: {} kendalltau: {}'.format(var,rank)
+            strtemp=('avarage total variance: {} kendalltau: {}'.format(var,rank))
             print_n_txt(_f=f,chars=strtemp)
 
         else:
@@ -169,6 +176,9 @@ def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
         plot_pi(out['pi1'],out['pi2'],args,labels,ratio1,ratio2)
         plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
+        var=avg_total_variance(out['D3'],transition_matrix)
+        rank=kendall_tau(out['D3'],transition_matrix)
+        print('avarage total variance: {} kendalltau: {}'.format(var,rank))
     else:
         N=dataset_config["num"]
         clean_eval = func_eval2(MLN,test_iter[1],'cuda')

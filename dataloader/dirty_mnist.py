@@ -189,10 +189,10 @@ class FastMNIST(MNIST):
         # Scale data to [0,1]
         self.data = self.data.unsqueeze(1).float().div(255)
         # self.noise_type=noise_type
-        # if normalize:
-        #     self.data = self.data.sub_(0.1307).div_(0.3081)
-        # if noise_stddev > 0.0:
-        #     self.data += torch.randn_like(self.data) * noise_stddev
+        if normalize:
+            self.data = self.data.sub_(0.1307).div_(0.3081)
+        if noise_stddev > 0.0:
+            self.data += torch.randn_like(self.data) * noise_stddev
         # if noise_type != 'clean':
         #     self.targets=np.asarray([[self.targets[i]] for i in range(len(self.targets))])
         #     self.noisy_labels, self.actual_noise_rate = noisify(dataset='mnist', train_labels=self.targets, noise_type=noise_type, noise_rate=noise_rate, num=num)
