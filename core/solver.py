@@ -15,7 +15,7 @@ def load(args):
     config_defalts={
             "k":args.k,
             "sig_min":args.sig_min, 'sig_max': args.sig_max,
-            "lr":args.lr,"wd":args.wd,'lr_rate':args.lr_rate
+            "lr":args.lr,"ratio1":args.ratio,'ratio2':args.ratio2
         }
     if args.sweep and args.train:
         wandb.init(config=config_defalts)
@@ -74,14 +74,14 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     if args.data=='trec':
         optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
         #optimizer = optim.Adam(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=args.lr_rate, step_size=1000)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=args.lr_rate, step_size=10)
     elif args.data=='mnist':
         optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[3,6,9,12,15,18], gamma=args.lr_rate)
     else:
-        optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
-        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60,90,120,150,180], gamma=args.lr_rate)
-    
+        optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=config['wd'],eps=1e-8)
+        #scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60,90,120,150,180], gamma=args.lr_rate)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=10)
     MLN.train()
     EPOCHS = args.epoch
     train_acc, test_acc = [], []
@@ -143,19 +143,20 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
             plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
             var=avg_total_variance(out['D3'],transition_matrix)
             rank=kendall_tau(out['D3'],transition_matrix)
-            strtemp=('avarage total variance: {} kendalltau: {}'.format(var,rank))
-            print_n_txt(_f=f,chars=strtemp)
+            strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
+            print_n_txt(_f=f,_chars=strtemp)
 
         else:
             N=dataset_config["num"]
-            clean_eval = func_eval2(MLN,test_iter[1],'cuda')
-            ambiguous_eval=func_eval2(MLN,test_iter[0],'cuda')
-            plot_hist(clean_eval,ambiguous_eval,args)
-
+            clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
+            ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
+            auroc = plot_hist(clean_eval,ambiguous_eval,args)
+            strtemp=('auroc: [%.4f]'%(auroc))
+            print_n_txt(_f=f,_chars=strtemp)
             out1=test_eval(MLN,test_iter[1],data_size,'cuda',N)
             out2=test_eval(MLN,test_iter[0],data_size,'cuda',N)
-            plot_pi(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
-            plot_mu(out1,out2,transition_matrix,args)
+            plot_pi2(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
+            plot_mu2(out1,out2,transition_matrix,args)
             plot_sigma2(out1,out2,args)
     except:
         print('error')
@@ -181,12 +182,13 @@ def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         print('avarage total variance: {} kendalltau: {}'.format(var,rank))
     else:
         N=dataset_config["num"]
-        clean_eval = func_eval2(MLN,test_iter[1],'cuda')
-        ambiguous_eval=func_eval2(MLN,test_iter[0],'cuda')
-        plot_hist(clean_eval,ambiguous_eval,args)
-        
+        clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
+        ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
+        print(ambiguous_eval['alea'],clean_eval['alea'])
+        auroc = plot_hist(clean_eval,ambiguous_eval,args)
+        print("AUROC:",auroc)
         out1=test_eval(MLN,test_iter[1],data_size,'cuda',N)
         out2=test_eval(MLN,test_iter[0],data_size,'cuda',N)
-        plot_pi(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
-        plot_mu(out1,out2,transition_matrix,args)
+        plot_pi2(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
+        plot_mu2(out1,out2,transition_matrix,args)
         plot_sigma2(out1,out2,args)

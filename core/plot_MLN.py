@@ -89,10 +89,10 @@ def save_log_dict(args,train_acc,test_acc):
 def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
     if args.sweep:
         DIR='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_test_pi.png'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
-        DIR2='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_test_pi.json'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
+        DIR2='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_test.json'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
     else:  
         DIR='./res/rate_res/{}_{}_{}/{}_test_pi.png'.format(args.data,args.mode,args.ER,args.id)
-        DIR2='./res/rate_res/{}_{}_{}/{}_test_pi.json'.format(args.data,args.mode,args.ER,args.id)
+        DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     if args.mode not in ['symmetric','rp','rs','fairflip','mixup']:
         if args.mode=='asymmetric':
             n=3
@@ -141,10 +141,10 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
     NOISE_RATE=int(args.ER*100)
     NOISE_TYPE= args.mode
     NOISE_TYPE=NOISE_TYPE.capitalize()
-    plt.suptitle('{} {} {}\% Mixture Weight'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
+    plt.suptitle('{} {} {}\% Mixture Weight'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=25)
     plt.subplot(2, 1, 1) 
-    plt.title('Delta Mixture Weight',fontsize=18)
-    plt.xlabel('Class',fontsize=15)
+    plt.title('Delta Mixture Weight',fontsize=23)
+    plt.xlabel('Class',fontsize=20)
     if args.data != 'cifar100':
         # if args.mode=='symmetric':
         #     plt.ylim([0,0.3])
@@ -161,17 +161,17 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         else:
             plt.plot(NOT_NOISE,clean[1,:],'bo',markersize=5)
             plt.plot(IS_NOISE,noisy[1,:],'ro',markersize=5)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='xx-large')
         plt.tight_layout()
     else:
         for i in range(n):
             plt.plot(x,log[i,:],label='$\pi({})-\pi({})$'.format(i+1,i+2),linewidth=1)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='xx-large')
         plt.tight_layout()        
     plt.subplot(2, 1, 2) 
     # print(log)
-    plt.title('Mixture Weight',fontsize=18)
-    plt.xlabel('Class',fontsize=15)
+    plt.title('Mixture Weight',fontsize=23)
+    plt.xlabel('Class',fontsize=20)
     if args.data !='cifar100':
         plt.xticks([i for i in range(labels)])
         clean2=np.take(log2,NOT_NOISE,axis=1)
@@ -187,12 +187,12 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         else:
             plt.plot(NOT_NOISE,clean2[1,:],'bo',markersize=5)
             plt.plot(IS_NOISE,noisy2[1,:],'ro',markersize=5)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='xx-large')
         plt.tight_layout()
     else:
         for i in range(n+1):
             plt.plot(x,log2[i,:],label='$\pi({})$'.format(i+1),linewidth=1)
-        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='x-large')
+        plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.,fontsize='xx-large')
         plt.tight_layout()        
     try:
         print('dir made')
@@ -201,19 +201,19 @@ def plot_pi(out,out2,args,labels=10,ratio1=1,ratio2=1):
         pass
     plt.savefig(DIR)
     save_log={}
-    save_log['pi']=log2.tolist()
-    save_log['dpi']=log.tolist()
     with open(DIR2,'w') as json_file:
-        json.dump(save_log,json_file)
+        save_log['pi']=log2.tolist()
+        save_log['dpi']=log.tolist()
+        json.dump(save_log,json_file,indent=4)
 
 
 def plot_mu(out,args,true_noise,labels=10,ratio1=1,ratio2=1):
     if args.sweep:
         DIR1='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_test_mu.png'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
-        DIR2='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_confusion.png'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
+        DIR2='./res/rate_res/{}_{}_{}/sweep_{}_{}_{}_test.json'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2)
     else:
         DIR1='./res/rate_res/{}_{}_{}/{}_test_mu.png'.format(args.data,args.mode,args.ER,args.id)
-        DIR2='./res/rate_res/{}_{}_{}/{}_confusion.png'.format(args.data,args.mode,args.ER,args.id)
+        DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
     img2=out['D2']
     img3=out['D3']
@@ -306,25 +306,40 @@ def plot_mu(out,args,true_noise,labels=10,ratio1=1,ratio2=1):
     #     img = sns.heatmap(img7,ax=ax2,annot=True)
     # fig.savefig(DIR2)
     # print(img4)
+    with open(DIR2,'r') as json_file:
+        save_log = json.load(json_file)
+    save_log['TM']=img3.tolist()
+    save_log['GT']=img7.tolist()
+    with open(DIR2,'w') as json_file:
+        json.dump(save_log,json_file,indent=4)
 
 def plot_hist(clean_eval,ambiguous_eval,args):
     plt.figure(figsize=(8,5))
     NAME=args.data
-    NAME=NAME.upper()
+    NAME=NAME[6:].upper()
     NOISE_RATE=int(args.ER*100)
     NOISE_TYPE= args.mode
     NOISE_TYPE=NOISE_TYPE.capitalize()
-    plt.title('{} {} {}\% Aleatoric Uncertainty Histogram \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=10)
+    plt.title('Dirty {} {} {}\% Aleatoric Uncertainty Histogram\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=10)
     plt.hist(clean_eval['alea_'], color='b',label='clean',bins=100, alpha=0.5)
-    plt.hist(ambiguous_eval['alea_'][:10000],color='r',label='ambiguous',bins=100, alpha=0.5)
+    plt.hist(ambiguous_eval['alea_'],color='r',label='ambiguous',bins=100, alpha=0.5)
     plt.legend()
-    plt.savefig('./res/{}_{}/{}_hist.png'.format(args.mode,args.ER,args.id))
-    roc=roc_auc_score(clean_eval,ambiguous_eval)
+    try:
+        print('dir made')
+        os.mkdir('./res/rate_res/{}_{}_{}/'.format(args.data,args.mode,args.ER))
+    except FileExistsError:
+        pass
+    plt.savefig('./res/rate_res/{}_{}_{}/{}_hist.png'.format(args.data,args.mode,args.ER,args.id))
+    size = len(clean_eval['alea_'])
+    GT=[0 if i<size else 1 for i in range(2*size)]
+    EVAL=clean_eval['alea_']+ambiguous_eval['alea_']
+    roc=roc_auc_score(GT,EVAL)
     return roc
 
 def plot_pi2(out,out2,out3,out4,args,N):
     n=N+2
-    DIR='./res/{}_{}/{}_pi.png'.format(args.mode,args.ER,args.id)
+    DIR='./res/rate_res/{}_{}_{}/{}_pi.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     if args.mode not in ['symmetric','rp','rs','fairflip','mixup']:
         IS_NOISE = [7,2,5,6,3]
         NOT_NOISE=[0,1,4,8,9]
@@ -364,13 +379,13 @@ def plot_pi2(out,out2,out3,out4,args,N):
             log4[i]=mean_dist
         except:
             log4[i]=np.zeros(n+1)
-    NAME=args.data
+    NAME=args.data[6:]
     NAME=NAME.upper()
     NOISE_RATE=int(args.ER*100)
     NOISE_TYPE= args.mode
     NOISE_TYPE=NOISE_TYPE.capitalize()
     fig = plt.figure(figsize=(12,8))
-    plt.suptitle('{} {} {}\% Mixture Weight\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=18)
+    plt.suptitle('Dirty {} {} {}\% Mixture Weight\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=18)
     plt.subplot(2, 2, 1) 
     plt.title('Delta Mixture Weight Clean',fontsize=15)
     plt.xticks([i for i in range(10)])
@@ -444,16 +459,22 @@ def plot_pi2(out,out2,out3,out4,args,N):
     plt.legend(bbox_to_anchor=(1.05, 1),loc=2, borderaxespad=0.)
     plt.tight_layout()
     plt.savefig(DIR)
-    # save_log={}
-    # save_log['pi']=log2.tolist()
-    # save_log['dpi']=log.tolist()
-    # with open(DIR2,'w') as json_file:
-    #     json.dump(save_log,json_file)
+    log2=np.transpose(log2)
+    log=np.transpose(log)
+    log3=np.transpose(log3)
+    log4=np.transpose(log4)
+    save_log={}
+    with open(DIR2,'w') as json_file:
+        save_log['pi_clean']=log2.tolist()
+        save_log['dpi_clean']=log.tolist()
+        save_log['pi_amb']=log4.tolist()
+        save_log['dpi_amb']=log3.tolist()
+        json.dump(save_log,json_file,indent=4)
 
 
 def plot_mu2(out,out2,true_noise,args):
-    DIR1='./res/{}_{}/{}_test_mu3.png'.format(args.mode,args.ER,args.id)
-    DIR2='./res/{}_{}/{}_confusion.png'.format(args.mode,args.ER,args.id)
+    DIR1='./res/rate_res/{}_{}_{}/{}_test_mu3.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
     img2=out['D2']
     img3=out['D3']
@@ -481,13 +502,13 @@ def plot_mu2(out,out2,true_noise,args):
     img8=np.round(img8,2)
     img9=np.round(true_noise,2)
     img10=np.eye(10)
-    NAME=args.data
+    NAME=args.data[6:]
     NAME=NAME.upper()
     NOISE_RATE=int(args.ER*100)
     NOISE_TYPE= args.mode
     NOISE_TYPE=NOISE_TYPE.capitalize()
-    fig, ((ax3,ax4),(ax7,ax8)) = plt.subplots(2, 2, figsize=(12, 12))
-    fig.suptitle('{} {} {}\% Transition Matrix \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
+    fig, ((ax3,ax7),(ax4,ax8)) = plt.subplots(2, 2, figsize=(12, 12))
+    fig.suptitle('Dirty {} {} {}\% Transition Matrix \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
     # ax1.set_title('1st largest distribution clean',fontsize=25)
     # img = sns.heatmap(img1,ax=ax1,annot=True)
     # ax1.set_xlabel('predicted probablity',fontsize=20)
@@ -504,7 +525,7 @@ def plot_mu2(out,out2,true_noise,args):
     ax3.set_ylabel('Noisy Label',fontsize=15)
 
     ax4.set_title('Clean - True',fontsize=18)
-    img = sns.heatmap(img7,ax=ax4,annot=True)
+    img = sns.heatmap(img10,ax=ax4,annot=True)
     ax4.set_xlabel('Clean Label',fontsize=15)
     ax4.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
@@ -531,6 +552,14 @@ def plot_mu2(out,out2,true_noise,args):
     plt.tight_layout()
     fig.savefig(DIR1)
 
+    with open(DIR2,'r') as json_file:
+        save_log = json.load(json_file)
+    save_log['TM_clean']=img3.tolist()
+    save_log['GT_clean']=img10.tolist()
+    save_log['TM_amb']=img7.tolist()
+    save_log['GT_amb']=img9.tolist()
+    with open(DIR2,'w') as json_file:
+        json.dump(save_log,json_file,indent=4)
     # fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 14))
     # fig.suptitle('DirtyCIFAR10 {} {} confusion'.format(args.mode,args.ER),fontsize=20)
     # ax1.set_title('Confusion matrix clean')
@@ -553,8 +582,8 @@ def plot_mu2(out,out2,true_noise,args):
     
 
 def plot_sigma2(out,out2,args):
-    DIR3='./res/{}_{}/{}_test_sigma.png'.format(args.mode,args.ER,args.id)
-
+    DIR3='./res/rate_res/{}_{}_{}/{}_test_sigma.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     sigma=out['sigma']
     sigma2 = out2['sigma']
     log = np.zeros(10)
@@ -589,7 +618,7 @@ def plot_sigma2(out,out2,args):
     noisy2=np.take(log2,IS_NOISE,axis=0)
     MIN_SIG =np.min(log)
     MAX_SIG=np.max(log2)
-    NAME=args.data
+    NAME=args.data[6:]
     NAME=NAME.upper()
     NOISE_RATE=int(args.ER*100)
     fig = plt.figure(figsize=(8, 5))
@@ -610,4 +639,9 @@ def plot_sigma2(out,out2,args):
     plt.legend(bbox_to_anchor=(-0.1, 1),loc=1, borderaxespad=0.)
     plt.tight_layout()
     plt.savefig(DIR3)
-    save_log_dict(args,log,log2)
+    with open(DIR2,'r') as json_file:
+        save_log = json.load(json_file)
+    save_log['alea_clean']=log.tolist()
+    save_log['alea_amb']=log2.tolist()
+    with open(DIR2,'w') as json_file:
+        json.dump(save_log,json_file,indent=4)

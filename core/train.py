@@ -25,7 +25,7 @@ def build_model(args,device,trec_config=None):
     DATASET=args.data
     if DATASET=='mnist' or DATASET=='dirty_mnist':
         model = MixtureLogitNetwork_cnn2(name='mln',x_dim=[1,28,28],k_size=3,c_dims=[32,64,128],p_sizes=[2,2,2],
-                            h_dims=[128,64],y_dim=10,USE_BN=False,k=10,
+                            h_dims=[128,64],y_dim=10,USE_BN=False,k=args.k,
                             sig_min=1.0,sig_max=10, 
                             mu_min=-1,mu_max=+1,SHARE_SIG=True).to(device)
         summary_str,summary = summary_string(model,input_size=(1,28,28),device=device)

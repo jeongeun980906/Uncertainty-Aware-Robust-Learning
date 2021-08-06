@@ -76,10 +76,10 @@ if __name__ == '__main__':
             if args.data=='cifar100':
                 param_dict = {
                 'ratio1': {
-                    'values': [1,0.5,0.1,0.01,0.05,0.001,0.0]
+                    'values': [1,0.5,0.1,0.01,0.05,5,0.0]
                 },
                 'ratio2': {
-                    'values': [0.01]
+                    'values': [0.1]
                 }
             }
             elif args.data=='trec':
@@ -93,11 +93,11 @@ if __name__ == '__main__':
             }
             else:
                 param_dict = {
-                'ratio1': {
-                    'values': [0.1,5,10,1,0.5,0.0,0.05]
+                'lr_rate': {
+                    'values': [0.2,0.5,0.7]
                 },
-                'ratio2': {
-                    'values': [1]
+                'wd': {
+                    'values': [1e-4,1e-6,1e-5,1e-7]
                 }
             }
             sweep_config = {
