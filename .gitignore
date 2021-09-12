@@ -1,3 +1,4 @@
 data/*
 res/*
 ckpt/*
+/wandb

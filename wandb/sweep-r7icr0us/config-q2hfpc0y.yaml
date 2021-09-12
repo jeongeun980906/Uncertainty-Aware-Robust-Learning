@@ -1,6 +1,0 @@
-wandb_version: 1
-
-ratio1:
-  value: 0.5
-ratio2:
-  value: 2
