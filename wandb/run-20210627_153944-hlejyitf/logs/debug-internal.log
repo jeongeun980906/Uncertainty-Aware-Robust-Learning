@@ -1,0 +1,61 @@
+2021-06-27 15:39:45,185 INFO    MainThread:26310 [internal.py:wandb_internal():88] W&B internal server running at pid: 26310, started at: 2021-06-27 15:39:45.184937
+2021-06-27 15:39:45,188 DEBUG   SenderThread:26310 [sender.py:send():179] send: header
+2021-06-27 15:39:45,188 INFO    WriterThread:26310 [datastore.py:open_for_write():80] open: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/run-hlejyitf.wandb
+2021-06-27 15:39:45,188 DEBUG   HandlerThread:26310 [handler.py:handle_request():124] handle_request: check_version
+2021-06-27 15:39:45,189 DEBUG   SenderThread:26310 [sender.py:send_request():193] send_request: check_version
+2021-06-27 15:39:45,391 DEBUG   SenderThread:26310 [sender.py:send():179] send: run
+2021-06-27 15:39:45,395 DEBUG   SenderThread:26310 [git.py:repo():33] git repository is invalid
+2021-06-27 15:39:45,601 INFO    SenderThread:26310 [dir_watcher.py:__init__():168] watching files in: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files
+2021-06-27 15:39:45,601 INFO    SenderThread:26310 [sender.py:_start_run_threads():704] run started: hlejyitf with start time 1624775984
+2021-06-27 15:39:45,601 DEBUG   SenderThread:26310 [sender.py:send():179] send: summary
+2021-06-27 15:39:45,601 INFO    SenderThread:26310 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-06-27 15:39:45,602 DEBUG   HandlerThread:26310 [handler.py:handle_request():124] handle_request: run_start
+2021-06-27 15:39:45,607 DEBUG   HandlerThread:26310 [meta.py:__init__():39] meta init
+2021-06-27 15:39:45,607 DEBUG   HandlerThread:26310 [meta.py:__init__():53] meta init done
+2021-06-27 15:39:45,607 DEBUG   HandlerThread:26310 [meta.py:probe():210] probe
+2021-06-27 15:39:45,613 DEBUG   HandlerThread:26310 [git.py:repo():33] git repository is invalid
+2021-06-27 15:39:45,613 DEBUG   HandlerThread:26310 [meta.py:_save_pip():57] save pip
+2021-06-27 15:39:45,613 DEBUG   HandlerThread:26310 [meta.py:_save_pip():71] save pip done
+2021-06-27 15:39:45,613 DEBUG   HandlerThread:26310 [meta.py:probe():252] probe done
+2021-06-27 15:39:45,673 DEBUG   SenderThread:26310 [sender.py:send():179] send: files
+2021-06-27 15:39:45,673 INFO    SenderThread:26310 [sender.py:_save_file():829] saving file wandb-metadata.json with policy now
+2021-06-27 15:39:45,681 DEBUG   HandlerThread:26310 [handler.py:handle_request():124] handle_request: stop_status
+2021-06-27 15:39:45,681 DEBUG   SenderThread:26310 [sender.py:send_request():193] send_request: stop_status
+2021-06-27 15:39:45,857 DEBUG   SenderThread:26310 [sender.py:send():179] send: files
+2021-06-27 15:39:45,857 INFO    SenderThread:26310 [sender.py:_save_file():829] saving file media/graph/graph_0_summary_3f86426dcf21b5749db9.graph.json with policy now
+2021-06-27 15:39:45,857 DEBUG   SenderThread:26310 [sender.py:send():179] send: summary
+2021-06-27 15:39:45,858 INFO    SenderThread:26310 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-06-27 15:39:46,332 INFO    Thread-11 :26310 [upload_job.py:push():133] Uploaded file /tmp/tmpx21u0uglwandb/1dhc3yi2-wandb-metadata.json
+2021-06-27 15:39:46,509 INFO    Thread-12 :26310 [upload_job.py:push():133] Uploaded file /tmp/tmpx21u0uglwandb/29t62h6c-media/graph/graph_0_summary_3f86426dcf21b5749db9.graph.json
+2021-06-27 15:39:46,602 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/requirements.txt
+2021-06-27 15:39:46,602 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/output.log
+2021-06-27 15:39:46,603 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-summary.json
+2021-06-27 15:39:46,603 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/media/graph/graph_0_summary_3f86426dcf21b5749db9.graph.json
+2021-06-27 15:39:46,603 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-metadata.json
+2021-06-27 15:39:46,603 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/media
+2021-06-27 15:39:46,603 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/media/graph
+2021-06-27 15:39:58,016 DEBUG   SenderThread:26310 [sender.py:send():179] send: history
+2021-06-27 15:39:58,018 DEBUG   SenderThread:26310 [sender.py:send():179] send: summary
+2021-06-27 15:39:58,022 INFO    SenderThread:26310 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-06-27 15:39:58,605 INFO    Thread-8  :26310 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-summary.json
+2021-06-27 15:40:00,112 WARNING MainThread:26310 [internal.py:wandb_internal():147] Internal process interrupt: 1
+2021-06-27 15:40:00,368 WARNING MainThread:26310 [internal.py:wandb_internal():147] Internal process interrupt: 2
+2021-06-27 15:40:00,368 ERROR   MainThread:26310 [internal.py:wandb_internal():150] Internal process interrupted.
+2021-06-27 15:40:00,374 INFO    HandlerThread:26310 [handler.py:finish():638] shutting down handler
+2021-06-27 15:40:00,375 DEBUG   SenderThread:26310 [sender.py:send():179] send: history
+2021-06-27 15:40:00,376 INFO    SenderThread:26310 [sender.py:finish():933] shutting down sender
+2021-06-27 15:40:00,376 INFO    SenderThread:26310 [dir_watcher.py:finish():282] shutting down directory watcher
+2021-06-27 15:40:00,378 INFO    WriterThread:26310 [datastore.py:close():288] close: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/run-hlejyitf.wandb
+2021-06-27 15:40:00,607 INFO    SenderThread:26310 [dir_watcher.py:finish():312] scan: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files
+2021-06-27 15:40:00,607 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/config.yaml config.yaml
+2021-06-27 15:40:00,607 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-summary.json wandb-summary.json
+2021-06-27 15:40:00,608 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/requirements.txt requirements.txt
+2021-06-27 15:40:00,608 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-metadata.json wandb-metadata.json
+2021-06-27 15:40:00,608 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/output.log output.log
+2021-06-27 15:40:00,616 INFO    SenderThread:26310 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/media/graph/graph_0_summary_3f86426dcf21b5749db9.graph.json media/graph/graph_0_summary_3f86426dcf21b5749db9.graph.json
+2021-06-27 15:40:00,616 INFO    SenderThread:26310 [file_pusher.py:finish():176] shutting down file pusher
+2021-06-27 15:40:00,616 INFO    SenderThread:26310 [file_pusher.py:join():181] waiting for file pusher
+2021-06-27 15:40:01,338 INFO    Thread-15 :26310 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/requirements.txt
+2021-06-27 15:40:01,357 INFO    Thread-13 :26310 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/config.yaml
+2021-06-27 15:40:01,394 INFO    Thread-14 :26310 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210627_153944-hlejyitf/files/wandb-summary.json
+2021-06-27 15:40:01,803 INFO    MainThread:26310 [internal.py:handle_exit():78] Internal process exited

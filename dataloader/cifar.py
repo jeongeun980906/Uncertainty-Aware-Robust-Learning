@@ -48,7 +48,8 @@ class CIFAR10(data.Dataset):
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
                  download=False,
-                 noise_type=None, noise_rate=0.2, random_state=0,test_noisy=False,num=None):
+                 noise_type=None, noise_rate=0.2, random_state=0,
+                 test_noisy=False,num=None,indicies=None):
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -92,11 +93,17 @@ class CIFAR10(data.Dataset):
             if noise_type !='clean':
                 # noisify train data
                 self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
-                self.train_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, 
+                self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, 
                                                                         noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
                 self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
                 _train_labels=[i[0] for i in self.train_labels]
                 self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+        if indicies!= None:
+            indicies = np.asarray(indicies,dtype=np.int64)
+            self.train_data = self.train_data[indicies]
+            self.train_noisy_labels = np.asarray(self.train_noisy_labels)
+            self.train_noisy_labels = self.train_noisy_labels[indicies]
+            self.actual_noise_rate = self.noise_or_not[indicies].sum()/(indicies.shape[0])
         else:
             f = self.test_list[0][0]
             file = os.path.join(self.root, self.base_folder, f)
@@ -116,7 +123,7 @@ class CIFAR10(data.Dataset):
             if test_noisy:
                 # noisify tesr data
                 self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
-                self.test_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type,
+                self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type,
                                                                      noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
                 self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
                 _test_labels=[i[0] for i in self.test_labels]
@@ -233,7 +240,8 @@ class CIFAR100(data.Dataset):
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
                  download=False,
-                 noise_type=None, noise_rate=0.2, random_state=0,test_noisy=False):
+                 noise_type=None, noise_rate=0.2, random_state=0,
+                 test_noisy=False,indicies=None):
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -275,11 +283,17 @@ class CIFAR100(data.Dataset):
             if noise_type is not None:
                 # noisify train data
                 self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
-                self.train_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type,
+                self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type,
                                                                      noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=1)
                 self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
                 _train_labels=[i[0] for i in self.train_labels]
                 self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+            if indicies!= None:
+                indicies = np.asarray(indicies,dtype=np.int64)
+                self.train_data = self.train_data[indicies]
+                self.train_noisy_labels = np.asarray(self.train_noisy_labels)
+                self.train_noisy_labels = self.train_noisy_labels[indicies]
+                self.actual_noise_rate = self.noise_or_not[indicies].sum()/(indicies.shape[0])
         else:
             f = self.test_list[0][0]
             file = os.path.join(self.root, self.base_folder, f)
@@ -299,7 +313,7 @@ class CIFAR100(data.Dataset):
             if test_noisy:
                 # noisify tesr data
                 self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
-                self.test_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, 
+                self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, 
                                                                             noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=1)
                 self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
                 _test_labels=[i[0] for i in self.test_labels]

@@ -1,38 +1,19 @@
 import torch
-import wandb
-from core.train import build_model,build_dataset
-from core.plot_MLN import *
-from core.MLN_loss import mace_loss
-from core.MLN_eval import func_eval,test_eval,func_eval2
+from core.loader import build_model,build_dataset
+from core.plot import *
+from core.loss import mace_loss
+from core.eval import func_eval,test_eval,func_eval2,get_th
+from dataloader.dirty_estimate import get_estimated_dataset
+
 import torch.optim as optim
 import os
-from core.tunner import lambda_tunner
+
 def load(args):
     args=args
     device='cuda'
     train_iter,val_iter,test_iter,dataset_config,trec_config=build_dataset(args)
     net=build_model(args,device,trec_config)
-    config_defalts={
-            "k":args.k,
-            "sig_min":args.sig_min, 'sig_max': args.sig_max,
-            "lr":args.lr,"ratio1":args.ratio,'ratio2':args.ratio2
-        }
-    if args.sweep and args.train:
-        wandb.init(config=config_defalts)
-        wandb.watch(net, log_freq=100)
-        config=wandb.config
-        print(config)
-    elif args.wandb and args.train:
-        wandb.init(config=config_defalts,
-            tags=['{}_{}_{}_{}'.format(args.data,args.mode,args.ER,args.id)],
-            name=str(args.id), # Run name
-            project='MLN_{}_{}_{}'.format(args.data,args.mode,args.ER)# Project name. Default: gnn-robot
-        )
-        wandb.config.update({'ratio1':args.ratio,"ratio2":args.ratio2})
-        config=wandb.config
-        print(config)
-    else:
-        config={
+    config={
             "k":args.k,
             "sig_min":args.sig_min, 'sig_max': args.sig_max,
             "lr":args.lr,"wd":args.wd,'lr_rate':args.lr_rate,
@@ -48,14 +29,9 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     ratio1=config['ratio1']
     ratio2=config['ratio2']
 
-    if args.sweep:
-        DIR='./res/sweep/{}_{}_{}/'.format(args.data,args.mode,args.ER)
-        cDIR = './ckpt/sweep/{}_{}_{}/'.format(args.data,args.mode,args.ER)
-        txtName=(DIR+'{}_{}_{}_log.txt'.format(args.id,ratio1,ratio2))
-    else:
-        DIR = './res/normal/'+str(args.data)+'_'+str(args.mode)+'_'+str(args.ER)+'/'
-        cDIR = './ckpt/normal/{}_{}_{}/'.format(args.data,args.mode,args.ER)
-        txtName = (DIR+str(args.id)+'_log.txt')
+    DIR = './res/'+str(args.data)+'_'+str(args.mode)+'_'+str(args.ER)+'/'
+    cDIR = './ckpt/{}_{}_{}/'.format(args.data,args.mode,args.ER)
+    txtName = (DIR+str(args.id)+'_log.txt')
     try:
         print('dir made')
         os.mkdir(DIR)
@@ -63,14 +39,12 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     except FileExistsError:
         pass
 
-    if args.tunner:
-        print('use lambda tunner')
-        tunner = lambda_tunner(int(dataset_config['num_classes']))
-        ratio1=tunner[args.data][0]
-        ratio2 = tunner[args.data][1]
     f = open(txtName,'w') # Open txt file
     print_n_txt(_f=f,_chars='Text name: '+txtName)
     print_n_txt(_f=f,_chars=str(args))
+    if dataset_config['val_noise_rate'] != None:
+        strTemp = ('cross validation set actual noise rate: %.3f'%(dataset_config['val_noise_rate']))
+        print_n_txt(_f=f,_chars=strTemp)
     if args.data=='trec':
         optimizer = optim.Adadelta(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
         #optimizer = optim.Adam(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
@@ -85,7 +59,6 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     MLN.train()
     EPOCHS = args.epoch
     train_acc, test_acc = [], []
-    tunner_rate=20
     for epoch in range(EPOCHS):
         loss_sum = 0.0
         #time.sleep(1)
@@ -117,50 +90,37 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
                     test_res['alea'],test_res['epis'],test_res['pi_entropy'],test_res['top2_pi']))
         print_n_txt(_f=f,_chars=strTemp)
         print_n_txt(_f=f,_chars=strTemp2)          
-        if args.sweep or args.wandb:
-            wandb.log({"loss": loss_avg,
-                        "train_acc": train_res['val_accr'],
-                        "test_acc": test_res['val_accr'],
-                        'alea': test_res['alea'],
-                        'epis': test_res['epis'],
-                        'pi_entropy': test_res['pi_entropy'],
-                        'top2_pi': test_res['top2_pi'],
-            })
         train_acc.append(train_res['val_accr'])
         test_acc.append(test_res['val_accr'])
-    if args.sweep:
-        torch.save(MLN.state_dict(),'./ckpt/sweep/{}_{}_{}/MLN_{}_{:.1f}_{:.1f}.pt'.format(args.data,args.mode,args.ER,args.id,ratio1,ratio2))
-    else:
-        torch.save(MLN.state_dict(),'./ckpt/normal/{}_{}_{}/MLN_{}.pt'.format(args.data,args.mode,args.ER,args.id))
+    torch.save(MLN.state_dict(),'./ckpt/{}_{}_{}/MLN_{}.pt'.format(args.data,args.mode,args.ER,args.id))
 
     save_log_dict(args,train_acc,test_acc)
     plot_res_once(train_acc,test_acc,args,DIR)
-    try:
-        if len(test_iter)==1:
-            print(ratio1,ratio2)
-            out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
-            plot_pi(out['pi1'],out['pi2'],args,labels,ratio1,ratio2)
-            plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
-            var=avg_total_variance(out['D3'],transition_matrix)
-            rank=kendall_tau(out['D3'],transition_matrix)
-            strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
-            print_n_txt(_f=f,_chars=strtemp)
+    if len(test_iter)==1:
+        print(ratio1,ratio2)
+        out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
+        plot_mu(out,args,transition_matrix,labels)
+        var=avg_total_variance(out['D3'],transition_matrix)
+        rank=kendall_tau(out['D3'],transition_matrix)
+        strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
+        print_n_txt(_f=f,_chars=strtemp)
 
-        else:
-            N=dataset_config["num"]
-            clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
-            ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
-            auroc = plot_hist(clean_eval,ambiguous_eval,args)
-            strtemp=('auroc: [%.4f]'%(auroc))
-            print_n_txt(_f=f,_chars=strtemp)
-            out1=test_eval(MLN,test_iter[1],data_size,'cuda',N)
-            out2=test_eval(MLN,test_iter[0],data_size,'cuda',N)
-            plot_pi2(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
-            plot_mu2(out1,out2,transition_matrix,args)
-            plot_sigma2(out1,out2,args)
-    except:
-        print('error')
-        pass
+    else:
+        N=dataset_config["num"]
+        clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
+        ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
+        auroc = plot_hist(clean_eval,ambiguous_eval,args)
+        strtemp=('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
+                    (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
+        print_n_txt(_f=f,_chars=strtemp)
+        indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
+        del test_iter
+        e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
+        out1=test_eval(MLN,e_clean_iter,data_size,'cpu',N)
+        out2=test_eval(MLN,e_amb_iter,data_size,'cpu',N)
+        plot_mu2(out1,out2,transition_matrix,args)
+        plot_sigma2(out1,out2,args)
+
 def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     labels=int(dataset_config['num_classes'])
     transition_matrix = dataset_config['transition_matrix']
@@ -168,14 +128,10 @@ def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     data_size=dataset_config['input_size']
     ratio1=config['ratio1']
     ratio2=config['ratio2']
-    if args.sweep:
-        state_dict=torch.load('./ckpt/sweep/{}_{}_{}/MLN_{}_{:.1f}_{:.1f}.pt'.format(args.data,args.mode,args.ER,args.id,args.ratio,args.ratio2))
-    else:
-        state_dict=torch.load('./ckpt/normal/{}_{}_{}/MLN_{}.pt'.format(args.data,args.mode,args.ER,args.id))
+    state_dict=torch.load('./ckpt/{}_{}_{}/MLN_{}.pt'.format(args.data,args.mode,args.ER,args.id))
     MLN.load_state_dict(state_dict)
     if len(test_iter)==1:
         out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
-        plot_pi(out['pi1'],out['pi2'],args,labels,ratio1,ratio2)
         plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
         var=avg_total_variance(out['D3'],transition_matrix)
         rank=kendall_tau(out['D3'],transition_matrix)
@@ -186,9 +142,11 @@ def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
         print(ambiguous_eval['alea'],clean_eval['alea'])
         auroc = plot_hist(clean_eval,ambiguous_eval,args)
-        print("AUROC:",auroc)
-        out1=test_eval(MLN,test_iter[1],data_size,'cuda',N)
-        out2=test_eval(MLN,test_iter[0],data_size,'cuda',N)
-        plot_pi2(out1['pi1'],out1['pi2'],out2['pi1'],out2['pi2'],args,N)
+        print('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
+                        (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
+        indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
+        e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
+        out1=test_eval(MLN,e_clean_iter,data_size,'cuda',N)
+        out2=test_eval(MLN,e_amb_iter,data_size,'cuda',N)
         plot_mu2(out1,out2,transition_matrix,args)
         plot_sigma2(out1,out2,args)

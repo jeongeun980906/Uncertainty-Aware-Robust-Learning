@@ -1,0 +1,15 @@
+2021-06-27 01:07:58,479 INFO    Thread-7  :108691 [wandb_setup.py:_flush():69] setting env: {'project': 'MLN_sweep_mnist_symmetric_0.2', 'entity': 'jeongeun', 'root_dir': '/home/jeongeun/MLN_XRobust', 'run_id': '48lq6utw', 'sweep_param_path': '/home/jeongeun/MLN_XRobust/wandb/sweep-5g53ztnh/config-48lq6utw.yaml', 'sweep_id': '5g53ztnh'}
+2021-06-27 01:07:58,479 INFO    Thread-7  :108691 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-06-27 01:07:58,479 INFO    Thread-7  :108691 [wandb_init.py:_log_setup():337] Logging user logs to /home/jeongeun/MLN_XRobust/wandb/run-20210627_010758-48lq6utw/logs/debug.log
+2021-06-27 01:07:58,479 INFO    Thread-7  :108691 [wandb_init.py:_log_setup():338] Logging internal logs to /home/jeongeun/MLN_XRobust/wandb/run-20210627_010758-48lq6utw/logs/debug-internal.log
+2021-06-27 01:07:58,480 INFO    Thread-7  :108691 [wandb_init.py:init():370] calling init triggers
+2021-06-27 01:07:58,480 INFO    Thread-7  :108691 [wandb_init.py:init():375] wandb.init called with sweep_config: {'ratio1': 10, 'ratio2': 5}
+config: {'k': 5, 'sig_min': 1, 'sig_max': 10, 'lr': 0.001, 'wd': 5e-06, 'lr_rate': 0.5}
+2021-06-27 01:07:58,480 INFO    Thread-7  :108691 [wandb_init.py:init():419] starting backend
+2021-06-27 01:07:58,480 INFO    Thread-7  :108691 [backend.py:_multiprocessing_setup():70] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-06-27 01:07:58,483 INFO    Thread-7  :108691 [backend.py:ensure_launched():135] starting backend process...
+2021-06-27 01:07:58,512 INFO    Thread-7  :108691 [backend.py:ensure_launched():139] started backend process with pid: 108941
+2021-06-27 01:07:58,513 INFO    Thread-7  :108691 [wandb_init.py:init():424] backend started and connected
+2021-06-27 01:07:58,515 INFO    Thread-7  :108691 [wandb_run.py:_config_callback():873] config_cb None None {'ratio1': 10, 'ratio2': 5}
+2021-06-27 01:07:58,516 INFO    Thread-7  :108691 [wandb_init.py:init():472] updated telemetry
+2021-06-27 01:07:58,517 INFO    Thread-7  :108691 [wandb_init.py:init():491] communicating current version

@@ -1,0 +1,62 @@
+2021-06-30 15:54:07,561 INFO    MainThread:79099 [internal.py:wandb_internal():88] W&B internal server running at pid: 79099, started at: 2021-06-30 15:54:07.560933
+2021-06-30 15:54:07,564 DEBUG   SenderThread:79099 [sender.py:send():179] send: header
+2021-06-30 15:54:07,565 INFO    WriterThread:79099 [datastore.py:open_for_write():80] open: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/run-scyvrolb.wandb
+2021-06-30 15:54:07,565 DEBUG   HandlerThread:79099 [handler.py:handle_request():124] handle_request: check_version
+2021-06-30 15:54:07,565 DEBUG   SenderThread:79099 [sender.py:send_request():193] send_request: check_version
+2021-06-30 15:54:07,799 DEBUG   SenderThread:79099 [sender.py:send():179] send: run
+2021-06-30 15:54:07,803 DEBUG   SenderThread:79099 [git.py:repo():33] git repository is invalid
+2021-06-30 15:54:08,008 INFO    SenderThread:79099 [dir_watcher.py:__init__():168] watching files in: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files
+2021-06-30 15:54:08,008 INFO    SenderThread:79099 [sender.py:_start_run_threads():704] run started: scyvrolb with start time 1625036046
+2021-06-30 15:54:08,010 DEBUG   SenderThread:79099 [sender.py:send():179] send: summary
+2021-06-30 15:54:08,010 INFO    SenderThread:79099 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-06-30 15:54:08,011 DEBUG   HandlerThread:79099 [handler.py:handle_request():124] handle_request: run_start
+2021-06-30 15:54:08,015 DEBUG   HandlerThread:79099 [meta.py:__init__():39] meta init
+2021-06-30 15:54:08,015 DEBUG   HandlerThread:79099 [meta.py:__init__():53] meta init done
+2021-06-30 15:54:08,015 DEBUG   HandlerThread:79099 [meta.py:probe():210] probe
+2021-06-30 15:54:08,022 DEBUG   HandlerThread:79099 [git.py:repo():33] git repository is invalid
+2021-06-30 15:54:08,022 DEBUG   HandlerThread:79099 [meta.py:_save_pip():57] save pip
+2021-06-30 15:54:08,022 DEBUG   HandlerThread:79099 [meta.py:_save_pip():71] save pip done
+2021-06-30 15:54:08,022 DEBUG   HandlerThread:79099 [meta.py:probe():252] probe done
+2021-06-30 15:54:08,079 DEBUG   SenderThread:79099 [sender.py:send():179] send: files
+2021-06-30 15:54:08,080 INFO    SenderThread:79099 [sender.py:_save_file():829] saving file wandb-metadata.json with policy now
+2021-06-30 15:54:08,085 DEBUG   HandlerThread:79099 [handler.py:handle_request():124] handle_request: stop_status
+2021-06-30 15:54:08,086 DEBUG   SenderThread:79099 [sender.py:send_request():193] send_request: stop_status
+2021-06-30 15:54:08,286 DEBUG   SenderThread:79099 [sender.py:send():179] send: files
+2021-06-30 15:54:08,287 INFO    SenderThread:79099 [sender.py:_save_file():829] saving file media/graph/graph_0_summary_3232beb8340192e7773c.graph.json with policy now
+2021-06-30 15:54:08,287 DEBUG   SenderThread:79099 [sender.py:send():179] send: summary
+2021-06-30 15:54:08,288 INFO    SenderThread:79099 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-06-30 15:54:08,952 INFO    Thread-12 :79099 [upload_job.py:push():133] Uploaded file /tmp/tmp3hkaagoywandb/2ffl1tnd-media/graph/graph_0_summary_3232beb8340192e7773c.graph.json
+2021-06-30 15:54:09,010 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/wandb-metadata.json
+2021-06-30 15:54:09,010 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/media/graph/graph_0_summary_3232beb8340192e7773c.graph.json
+2021-06-30 15:54:09,010 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/output.log
+2021-06-30 15:54:09,010 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/wandb-summary.json
+2021-06-30 15:54:09,011 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/requirements.txt
+2021-06-30 15:54:09,011 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/media/graph
+2021-06-30 15:54:09,011 INFO    Thread-8  :79099 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/media
+2021-06-30 15:54:09,196 INFO    Thread-11 :79099 [upload_job.py:push():133] Uploaded file /tmp/tmp3hkaagoywandb/16ptnkof-wandb-metadata.json
+2021-06-30 15:54:23,268 DEBUG   HandlerThread:79099 [handler.py:handle_request():124] handle_request: stop_status
+2021-06-30 15:54:23,269 DEBUG   SenderThread:79099 [sender.py:send_request():193] send_request: stop_status
+2021-06-30 15:54:36,431 DEBUG   SenderThread:79099 [sender.py:send():179] send: stats
+2021-06-30 15:54:38,453 DEBUG   HandlerThread:79099 [handler.py:handle_request():124] handle_request: stop_status
+2021-06-30 15:54:38,454 DEBUG   SenderThread:79099 [sender.py:send_request():193] send_request: stop_status
+2021-06-30 15:54:41,880 WARNING MainThread:79099 [internal.py:wandb_internal():147] Internal process interrupt: 1
+2021-06-30 15:54:42,094 WARNING MainThread:79099 [internal.py:wandb_internal():147] Internal process interrupt: 2
+2021-06-30 15:54:42,095 ERROR   MainThread:79099 [internal.py:wandb_internal():150] Internal process interrupted.
+2021-06-30 15:54:42,107 INFO    HandlerThread:79099 [handler.py:finish():638] shutting down handler
+2021-06-30 15:54:42,108 DEBUG   SenderThread:79099 [sender.py:send():179] send: history
+2021-06-30 15:54:42,113 INFO    SenderThread:79099 [sender.py:finish():933] shutting down sender
+2021-06-30 15:54:42,115 INFO    SenderThread:79099 [dir_watcher.py:finish():282] shutting down directory watcher
+2021-06-30 15:54:42,115 INFO    WriterThread:79099 [datastore.py:close():288] close: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/run-scyvrolb.wandb
+2021-06-30 15:54:43,016 INFO    SenderThread:79099 [dir_watcher.py:finish():312] scan: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files
+2021-06-30 15:54:43,017 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/config.yaml config.yaml
+2021-06-30 15:54:43,017 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/wandb-summary.json wandb-summary.json
+2021-06-30 15:54:43,017 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/requirements.txt requirements.txt
+2021-06-30 15:54:43,017 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/wandb-metadata.json wandb-metadata.json
+2021-06-30 15:54:43,017 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/output.log output.log
+2021-06-30 15:54:43,027 INFO    SenderThread:79099 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/media/graph/graph_0_summary_3232beb8340192e7773c.graph.json media/graph/graph_0_summary_3232beb8340192e7773c.graph.json
+2021-06-30 15:54:43,028 INFO    SenderThread:79099 [file_pusher.py:finish():176] shutting down file pusher
+2021-06-30 15:54:43,028 INFO    SenderThread:79099 [file_pusher.py:join():181] waiting for file pusher
+2021-06-30 15:54:43,637 INFO    Thread-15 :79099 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/requirements.txt
+2021-06-30 15:54:43,657 INFO    Thread-14 :79099 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/wandb-summary.json
+2021-06-30 15:54:43,669 INFO    Thread-13 :79099 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210630_155406-scyvrolb/files/config.yaml
+2021-06-30 15:54:44,211 INFO    MainThread:79099 [internal.py:handle_exit():78] Internal process exited

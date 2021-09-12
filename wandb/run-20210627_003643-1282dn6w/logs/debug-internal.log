@@ -1,0 +1,12 @@
+2021-06-27 00:36:44,268 INFO    MainThread:87709 [internal.py:wandb_internal():88] W&B internal server running at pid: 87709, started at: 2021-06-27 00:36:44.268417
+2021-06-27 00:36:44,271 INFO    WriterThread:87709 [datastore.py:open_for_write():80] open: /home/jeongeun/MLN_XRobust/wandb/run-20210627_003643-1282dn6w/run-1282dn6w.wandb
+2021-06-27 00:36:44,272 DEBUG   SenderThread:87709 [sender.py:send():179] send: header
+2021-06-27 00:36:44,272 DEBUG   HandlerThread:87709 [handler.py:handle_request():124] handle_request: check_version
+2021-06-27 00:36:44,273 DEBUG   SenderThread:87709 [sender.py:send_request():193] send_request: check_version
+2021-06-27 00:36:48,384 WARNING MainThread:87709 [internal.py:wandb_internal():147] Internal process interrupt: 1
+2021-06-27 00:36:48,657 WARNING MainThread:87709 [internal.py:wandb_internal():147] Internal process interrupt: 2
+2021-06-27 00:36:48,657 ERROR   MainThread:87709 [internal.py:wandb_internal():150] Internal process interrupted.
+2021-06-27 00:36:49,273 INFO    WriterThread:87709 [datastore.py:close():288] close: /home/jeongeun/MLN_XRobust/wandb/run-20210627_003643-1282dn6w/run-1282dn6w.wandb
+2021-06-27 00:36:49,278 INFO    HandlerThread:87709 [handler.py:finish():638] shutting down handler
+2021-06-27 00:36:49,512 INFO    SenderThread:87709 [sender.py:finish():933] shutting down sender
+2021-06-27 00:36:49,513 INFO    MainThread:87709 [internal.py:handle_exit():78] Internal process exited

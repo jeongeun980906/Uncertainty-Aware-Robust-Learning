@@ -1,0 +1,31 @@
+{
+    "os": "Linux-4.4.0-210-generic-x86_64-with-glibc2.17",
+    "python": "3.8.8",
+    "heartbeatAt": "2021-06-27T10:38:38.843338",
+    "startedAt": "2021-06-27T10:38:37.230813",
+    "docker": null,
+    "gpu": "NVIDIA Tesla V100-SXM2-32GB",
+    "gpu_count": 2,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [
+        "--sweep",
+        "1",
+        "--id",
+        "1",
+        "--ER",
+        "0.8",
+        "--k",
+        "10",
+        "--gpu",
+        "1",
+        "--lr",
+        "5e-5"
+    ],
+    "state": "running",
+    "program": "main.py",
+    "codePath": "main.py",
+    "host": "nipa2021-16099",
+    "username": "jeongeun",
+    "executable": "/home/jeongeun/.pyenv/versions/ue/bin/python"
+}

@@ -11,8 +11,8 @@ else:
 
 import torch.utils.data as data
 from dataloader.utils import download_url, check_integrity, noisify
-from dataloader.nosify_instance import cutmix,mixup
 import torch
+from dataloader.nosify_instance import cutmix,mixup
 
 class ambiguousCIFAR10(data.Dataset):
     """`CIFAR10 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
@@ -50,7 +50,8 @@ class ambiguousCIFAR10(data.Dataset):
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
                  download=False,
-                 noise_type='symmetric', noise_rate=0.8, random_state=0,test_noisy=False,num=1,mix_type='mixup',alpha=0.5):
+                 noise_type='symmetric', noise_rate=0.8, random_state=0,test_noisy=False,num=1,mix_type='mixup',
+                    alpha=2, indicies=None):
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -102,7 +103,7 @@ class ambiguousCIFAR10(data.Dataset):
             if noise_type !='clean':
                 # noisify train data
                 self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
-                self.train_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
+                self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
                 self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
                 self.train_noisy_labels = torch.tensor(self.train_noisy_labels,dtype=torch.int64)
                 self.train_labels = torch.tensor(self.train_labels,dtype=torch.int64)
@@ -132,10 +133,24 @@ class ambiguousCIFAR10(data.Dataset):
             if test_noisy:
                 # noisify tesr data
                 self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
-                self.test_noisy_labels, self.actual_noise_rate = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
+                self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
+                try:
+                    if indicies.any() != None:
+                        indicies = np.asarray(indicies,dtype=np.int32)
+                        self.test_noisy_labels=np.asarray(self.test_noisy_labels)
+                        self.test_noisy_labels = self.test_noisy_labels[indicies]
+                except:
+                    pass
                 self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
                 self.test_noisy_labels = torch.tensor(self.test_noisy_labels,dtype=torch.int64)
                 #self.test_noisy_labels = self.test_noisy_labels.unsqueeze(-1)
+            try:
+                if indicies.any() != None:
+                    self.test_data = self.test_data[indicies]
+                    self.test_labels = np.asarray(self.test_labels)
+                    self.test_labels = self.test_labels[indicies]
+            except:
+                pass
             self.test_labels = torch.tensor(self.test_labels,dtype=torch.int64)
             #self.test_labels = self.test_labels.unsqueeze(-1)
     def __getitem__(self, index):
@@ -251,7 +266,7 @@ class cleanCIFAR10(data.Dataset):
 
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
-                 download=False):
+                 download=False,indicies=None):
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -309,6 +324,14 @@ class cleanCIFAR10(data.Dataset):
             self.test_labels = self.test_labels[5000:]
             self.test_data = self.test_data.reshape((5000, 3, 32, 32))
             self.test_data = self.test_data.transpose((0, 2, 3, 1))  # convert to HWC
+            try:
+                if indicies.any() != None:
+                    indicies = np.asarray(indicies,dtype=np.int32)
+                    self.test_data = self.test_data[indicies]
+                    self.test_labels = np.asarray(self.test_labels)
+                    self.test_labels = self.test_labels[indicies]
+            except:
+                pass
             self.test_labels = torch.tensor(self.test_labels,dtype=torch.int64)
             #self.test_labels = self.test_labels.unsqueeze(-1)
             print(self.test_data.shape,self.test_labels.size())
@@ -390,13 +413,14 @@ def dirtyCIFAR10(root, train=True,
                  transform=None, target_transform=None,
                  download=False,
                  noise_type='symmetric', noise_rate=0.8, random_state=0,
-                 test_noisy=False,num=1,mix_type='cutmix',alpha=0.2):
+                 test_noisy=False,num=1,mix_type='cutmix',alpha=0.2,
+                    clean_indicies=None,ambiguous_indicies=None):
     clean_dataset = cleanCIFAR10(
         root=root,
         train=train,
         transform=transform,
         target_transform=target_transform,
-        download=download
+        download=download , indicies = clean_indicies
     )
 
     ambiguous_dataset = ambiguousCIFAR10(
@@ -407,7 +431,7 @@ def dirtyCIFAR10(root, train=True,
         download=download,
         noise_type=noise_type,noise_rate=noise_rate,
         random_state=random_state,test_noisy=test_noisy,num=num,
-        mix_type=mix_type,alpha=alpha
+        mix_type=mix_type,alpha=alpha , indicies=ambiguous_indicies
     )
 
     return torch.utils.data.ConcatDataset([clean_dataset, ambiguous_dataset])

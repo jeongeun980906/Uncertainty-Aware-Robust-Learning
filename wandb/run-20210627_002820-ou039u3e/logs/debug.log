@@ -1,0 +1,30 @@
+2021-06-27 00:28:20,924 INFO    MainThread:81676 [wandb_setup.py:_flush():69] setting env: {}
+2021-06-27 00:28:20,924 INFO    MainThread:81676 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-06-27 00:28:20,924 INFO    MainThread:81676 [wandb_setup.py:_flush():69] setting login settings: {'api_key': '8d9f4e4e2ef09dc5c5322d11e94367d7eb03167f'}
+2021-06-27 00:28:20,924 INFO    MainThread:81676 [wandb_init.py:_log_setup():337] Logging user logs to /home/jeongeun/MLN_XRobust/wandb/run-20210627_002820-ou039u3e/logs/debug.log
+2021-06-27 00:28:20,924 INFO    MainThread:81676 [wandb_init.py:_log_setup():338] Logging internal logs to /home/jeongeun/MLN_XRobust/wandb/run-20210627_002820-ou039u3e/logs/debug-internal.log
+2021-06-27 00:28:20,925 INFO    MainThread:81676 [wandb_init.py:init():370] calling init triggers
+2021-06-27 00:28:20,925 INFO    MainThread:81676 [wandb_init.py:init():375] wandb.init called with sweep_config: {}
+config: {'k': 5, 'sig_min': 1, 'sig_max': 10, 'lr': 0.001, 'wd': 5e-06, 'lr_rate': 0.5}
+2021-06-27 00:28:20,925 INFO    MainThread:81676 [wandb_init.py:init():419] starting backend
+2021-06-27 00:28:20,925 INFO    MainThread:81676 [backend.py:_multiprocessing_setup():70] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-06-27 00:28:20,959 INFO    MainThread:81676 [backend.py:ensure_launched():135] starting backend process...
+2021-06-27 00:28:20,988 INFO    MainThread:81676 [backend.py:ensure_launched():139] started backend process with pid: 81978
+2021-06-27 00:28:20,990 INFO    MainThread:81676 [wandb_init.py:init():424] backend started and connected
+2021-06-27 00:28:20,993 INFO    MainThread:81676 [wandb_init.py:init():472] updated telemetry
+2021-06-27 00:28:20,993 INFO    MainThread:81676 [wandb_init.py:init():491] communicating current version
+2021-06-27 00:28:21,788 INFO    MainThread:81676 [wandb_init.py:init():496] got version response 
+2021-06-27 00:28:21,788 INFO    MainThread:81676 [wandb_init.py:init():504] communicating run to backend with 30 second timeout
+2021-06-27 00:28:21,795 ERROR   MainThread:81676 [wandb_init.py:init():783] error
+Traceback (most recent call last):
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 757, in init
+    run = wi.init()
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/wandb_init.py", line 505, in init
+    ret = backend.interface.communicate_run(run, timeout=30)
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 666, in communicate_run
+    run = self._make_run(run_obj)
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/interface/interface.py", line 240, in _make_run
+    run._make_proto_run(proto_run)
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 449, in _make_proto_run
+    run.display_name = self._name
+TypeError: 1 has type int, but expected one of: bytes, unicode

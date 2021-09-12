@@ -1,0 +1,266 @@
+2021-07-12 00:32:02,229 INFO    MainThread:73094 [internal.py:wandb_internal():88] W&B internal server running at pid: 73094, started at: 2021-07-12 00:32:02.228713
+2021-07-12 00:32:02,232 DEBUG   SenderThread:73094 [sender.py:send():179] send: header
+2021-07-12 00:32:02,233 INFO    WriterThread:73094 [datastore.py:open_for_write():80] open: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/run-csdzgbkp.wandb
+2021-07-12 00:32:02,233 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: check_version
+2021-07-12 00:32:02,233 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: check_version
+2021-07-12 00:32:02,935 DEBUG   SenderThread:73094 [sender.py:send():179] send: run
+2021-07-12 00:32:03,166 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: run_start
+2021-07-12 00:32:03,170 DEBUG   HandlerThread:73094 [meta.py:__init__():39] meta init
+2021-07-12 00:32:03,170 DEBUG   HandlerThread:73094 [meta.py:__init__():53] meta init done
+2021-07-12 00:32:03,170 DEBUG   HandlerThread:73094 [meta.py:probe():210] probe
+2021-07-12 00:32:03,172 INFO    SenderThread:73094 [dir_watcher.py:__init__():168] watching files in: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files
+2021-07-12 00:32:03,172 INFO    SenderThread:73094 [sender.py:_start_run_threads():704] run started: csdzgbkp with start time 1626017521
+2021-07-12 00:32:03,172 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:32:03,172 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:32:03,177 DEBUG   HandlerThread:73094 [meta.py:_setup_git():200] setup git
+2021-07-12 00:32:03,192 DEBUG   HandlerThread:73094 [meta.py:_setup_git():207] setup git done
+2021-07-12 00:32:03,192 DEBUG   HandlerThread:73094 [meta.py:_save_pip():57] save pip
+2021-07-12 00:32:03,193 DEBUG   HandlerThread:73094 [meta.py:_save_pip():71] save pip done
+2021-07-12 00:32:03,193 DEBUG   HandlerThread:73094 [meta.py:probe():252] probe done
+2021-07-12 00:32:03,253 DEBUG   SenderThread:73094 [sender.py:send():179] send: files
+2021-07-12 00:32:03,253 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-metadata.json with policy now
+2021-07-12 00:32:03,255 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:32:03,258 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:32:03,442 DEBUG   SenderThread:73094 [sender.py:send():179] send: files
+2021-07-12 00:32:03,443 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file media/graph/graph_0_summary_603c54163891c98cd4d7.graph.json with policy now
+2021-07-12 00:32:03,443 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:32:03,444 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:32:03,910 INFO    Thread-11 :73094 [upload_job.py:push():133] Uploaded file /tmp/tmp8hha87sowandb/3471co79-wandb-metadata.json
+2021-07-12 00:32:04,114 INFO    Thread-12 :73094 [upload_job.py:push():133] Uploaded file /tmp/tmp8hha87sowandb/34tbvlgt-media/graph/graph_0_summary_603c54163891c98cd4d7.graph.json
+2021-07-12 00:32:04,174 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-metadata.json
+2021-07-12 00:32:04,174 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/output.log
+2021-07-12 00:32:04,174 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/requirements.txt
+2021-07-12 00:32:04,174 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:32:04,174 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/media/graph/graph_0_summary_603c54163891c98cd4d7.graph.json
+2021-07-12 00:32:04,175 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/media
+2021-07-12 00:32:04,175 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_created():216] file/dir created: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/media/graph
+2021-07-12 00:32:18,444 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:32:18,444 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:32:18,905 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:32:18,908 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:32:18,925 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:32:19,178 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:32:31,689 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:32:33,627 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:32:33,627 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:32:35,083 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:32:35,086 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:32:35,088 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:32:35,184 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:32:48,813 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:32:48,813 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:32:50,762 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:32:50,764 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:32:50,767 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:32:51,190 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:33:02,095 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:33:04,003 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:33:04,004 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:33:07,019 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:33:07,024 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:33:07,027 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:33:07,196 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:33:19,186 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:33:19,187 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:33:23,091 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:33:23,094 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:33:23,096 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:33:23,202 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:33:32,491 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:33:34,370 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:33:34,370 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:33:38,782 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:33:38,785 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:33:38,791 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:33:39,210 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:33:49,552 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:33:49,553 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:33:54,499 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:33:54,505 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:33:54,510 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:33:55,217 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:34:02,896 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:34:04,735 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:34:04,736 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:34:09,961 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:34:09,963 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:34:09,966 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:34:10,222 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:34:19,919 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:34:19,919 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:34:26,081 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:34:26,086 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:34:26,088 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:34:26,228 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:34:33,293 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:34:35,101 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:34:35,102 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:34:41,709 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:34:41,711 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:34:41,714 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:34:42,234 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:34:50,312 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:34:50,312 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:34:57,585 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:34:57,587 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:34:57,592 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:34:58,240 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:35:03,719 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:35:05,506 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:35:05,507 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:35:13,400 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:35:13,403 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:35:13,409 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:35:14,246 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:35:20,693 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:35:20,694 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:35:29,403 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:35:29,410 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:35:29,412 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:35:30,254 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:35:34,160 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:35:35,876 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:35:35,876 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:35:45,265 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:35:45,268 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:35:45,270 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:35:46,260 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:35:51,060 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:35:51,060 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:36:01,117 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:36:01,119 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:36:01,122 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:36:01,265 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:36:04,621 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:36:06,249 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:36:06,249 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:36:18,044 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:36:18,047 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:36:18,053 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:36:18,272 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:36:21,437 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:36:21,437 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:36:34,081 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:36:34,083 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:36:34,086 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:36:34,277 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:36:35,064 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:36:36,625 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:36:36,625 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:36:51,197 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:36:51,200 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:36:51,202 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:36:51,285 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:36:51,816 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:36:51,817 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:37:05,517 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:37:07,000 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:37:07,000 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:37:07,199 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:37:07,202 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:37:07,205 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:37:07,290 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:37:22,180 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: stop_status
+2021-07-12 00:37:22,181 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: stop_status
+2021-07-12 00:37:23,061 DEBUG   SenderThread:73094 [sender.py:send():179] send: history
+2021-07-12 00:37:23,063 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:37:23,068 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:37:23,296 INFO    Thread-9  :73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:37:27,432 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:27,432 DEBUG   SenderThread:73094 [sender.py:send():179] send: telemetry
+2021-07-12 00:37:27,432 DEBUG   SenderThread:73094 [sender.py:send():179] send: exit
+2021-07-12 00:37:27,432 INFO    SenderThread:73094 [sender.py:send_exit():287] handling exit code: 0
+2021-07-12 00:37:27,433 INFO    SenderThread:73094 [sender.py:send_exit():295] send defer
+2021-07-12 00:37:27,433 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:27,433 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,433 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 0
+2021-07-12 00:37:27,434 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,434 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 0
+2021-07-12 00:37:27,434 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 1
+2021-07-12 00:37:27,434 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,434 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 1
+2021-07-12 00:37:27,494 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,495 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 1
+2021-07-12 00:37:27,495 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 2
+2021-07-12 00:37:27,495 DEBUG   SenderThread:73094 [sender.py:send():179] send: stats
+2021-07-12 00:37:27,496 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,496 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 2
+2021-07-12 00:37:27,496 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,496 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 2
+2021-07-12 00:37:27,496 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 3
+2021-07-12 00:37:27,497 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,497 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 3
+2021-07-12 00:37:27,499 DEBUG   SenderThread:73094 [sender.py:send():179] send: summary
+2021-07-12 00:37:27,502 INFO    SenderThread:73094 [sender.py:_save_file():829] saving file wandb-summary.json with policy end
+2021-07-12 00:37:27,502 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,502 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 3
+2021-07-12 00:37:27,502 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 4
+2021-07-12 00:37:27,503 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,503 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 4
+2021-07-12 00:37:27,503 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,503 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 4
+2021-07-12 00:37:27,534 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:27,714 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 5
+2021-07-12 00:37:27,714 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:27,715 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:27,715 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 5
+2021-07-12 00:37:27,715 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:27,715 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 5
+2021-07-12 00:37:27,715 INFO    SenderThread:73094 [dir_watcher.py:finish():282] shutting down directory watcher
+2021-07-12 00:37:27,815 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:28,298 INFO    SenderThread:73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/config.yaml
+2021-07-12 00:37:28,299 INFO    SenderThread:73094 [dir_watcher.py:_on_file_modified():229] file/dir modified: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:37:28,299 INFO    SenderThread:73094 [dir_watcher.py:finish():312] scan: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files
+2021-07-12 00:37:28,299 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/config.yaml config.yaml
+2021-07-12 00:37:28,299 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json wandb-summary.json
+2021-07-12 00:37:28,300 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/requirements.txt requirements.txt
+2021-07-12 00:37:28,306 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-metadata.json wandb-metadata.json
+2021-07-12 00:37:28,306 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/output.log output.log
+2021-07-12 00:37:28,316 INFO    SenderThread:73094 [dir_watcher.py:finish():318] scan save: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/media/graph/graph_0_summary_603c54163891c98cd4d7.graph.json media/graph/graph_0_summary_603c54163891c98cd4d7.graph.json
+2021-07-12 00:37:28,317 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 6
+2021-07-12 00:37:28,317 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:28,318 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:28,319 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 6
+2021-07-12 00:37:28,319 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:28,319 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 6
+2021-07-12 00:37:28,319 INFO    SenderThread:73094 [file_pusher.py:finish():176] shutting down file pusher
+2021-07-12 00:37:28,319 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 7
+2021-07-12 00:37:28,320 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:28,320 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 7
+2021-07-12 00:37:28,320 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:28,320 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 7
+2021-07-12 00:37:28,420 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:28,872 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 8
+2021-07-12 00:37:28,872 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:28,873 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:28,873 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 8
+2021-07-12 00:37:28,873 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:28,873 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 8
+2021-07-12 00:37:28,873 INFO    SenderThread:73094 [sender.py:send_request_defer():342] send defer: 9
+2021-07-12 00:37:28,874 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: defer
+2021-07-12 00:37:28,874 DEBUG   SenderThread:73094 [sender.py:send():179] send: final
+2021-07-12 00:37:28,875 INFO    HandlerThread:73094 [handler.py:handle_request_defer():141] handle defer: 9
+2021-07-12 00:37:28,875 DEBUG   SenderThread:73094 [sender.py:send():179] send: footer
+2021-07-12 00:37:28,875 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: defer
+2021-07-12 00:37:28,875 INFO    SenderThread:73094 [sender.py:send_request_defer():304] handle sender defer: 9
+2021-07-12 00:37:28,949 INFO    Thread-15 :73094 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/requirements.txt
+2021-07-12 00:37:28,960 INFO    Thread-13 :73094 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/config.yaml
+2021-07-12 00:37:28,974 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:28,974 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:29,016 INFO    Thread-14 :73094 [upload_job.py:push():133] Uploaded file /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/files/wandb-summary.json
+2021-07-12 00:37:29,076 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:29,076 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:29,177 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:29,178 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:29,283 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: poll_exit
+2021-07-12 00:37:29,283 DEBUG   SenderThread:73094 [sender.py:send_request():193] send_request: poll_exit
+2021-07-12 00:37:29,283 INFO    SenderThread:73094 [file_pusher.py:join():181] waiting for file pusher
+2021-07-12 00:37:29,285 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: get_summary
+2021-07-12 00:37:29,289 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: sampled_history
+2021-07-12 00:37:29,290 DEBUG   HandlerThread:73094 [handler.py:handle_request():124] handle_request: shutdown
+2021-07-12 00:37:29,291 INFO    HandlerThread:73094 [handler.py:finish():638] shutting down handler
+2021-07-12 00:37:29,875 INFO    WriterThread:73094 [datastore.py:close():288] close: /home/jeongeun/MLN_XRobust/wandb/run-20210712_003201-csdzgbkp/run-csdzgbkp.wandb
+2021-07-12 00:37:30,284 INFO    SenderThread:73094 [sender.py:finish():933] shutting down sender
+2021-07-12 00:37:30,284 INFO    SenderThread:73094 [file_pusher.py:finish():176] shutting down file pusher
+2021-07-12 00:37:30,284 INFO    SenderThread:73094 [file_pusher.py:join():181] waiting for file pusher
+2021-07-12 00:37:30,285 INFO    MainThread:73094 [internal.py:handle_exit():78] Internal process exited

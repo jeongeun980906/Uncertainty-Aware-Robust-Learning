@@ -8,6 +8,7 @@ from torchvision.datasets.mnist import MNIST, VisionDataset
 from torchvision.datasets.utils import download_url, extract_archive, verify_str_arg
 from torchvision.transforms import Compose, Normalize, ToTensor
 from dataloader.utils import noisify
+
 # Cell
 
 MNIST_NORMALIZATION = Normalize((0.1307,), (0.3081,))
@@ -59,7 +60,7 @@ class AmbiguousMNIST(VisionDataset):
         normalize: bool = True,
         noise_stddev=0.05,
         device=None,noise_type='symmetric',
-        noise_rate=0.2,num=2
+        noise_rate=0.2,num=2, indicies=None
     ):
         super().__init__(root, transform=transform, target_transform=target_transform)
 
@@ -90,15 +91,21 @@ class AmbiguousMNIST(VisionDataset):
         self.targets = self.targets[data_range]
         if noise_type != 'clean':
             self.targets=np.asarray([[self.targets[i]] for i in range(len(self.targets))])
-            self.noisy_labels, self.actual_noise_rate = noisify(dataset='mnist', train_labels=self.targets, noise_type=noise_type, noise_rate=noise_rate, num=num)
+            self.noisy_labels, self.transition_matrix = noisify(dataset='mnist', train_labels=self.targets, noise_type=noise_type, noise_rate=noise_rate, num=num)
             self.noisy_labels=[i[0] for i in self.noisy_labels]
             _targets=[i[0] for i in self.targets]
             self.noise_or_not = np.transpose(self.noisy_labels)==np.transpose(_targets)
             self.data= self.data.to(device)
-            self.noisy_labels = torch.tensor(self.noisy_labels, dtype=torch.int64).to(device)
+            self.noisy_labels = torch.tensor(self.noisy_labels, dtype=torch.int64).to(device)                
         else:
             self.data, self.targets = self.data.to(device), self.targets.to(device)
-
+        try:
+            if indicies.any() != None:
+                indicies = torch.tensor(indicies,dtype=torch.int64).to(device)
+                self.data = self.data[indicies]
+                self.targets = self.targets[indicies]
+        except:
+            pass
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, int]:
         """
         Args:
@@ -183,7 +190,7 @@ class FastMNIST(MNIST):
             max throughput).
     """
 
-    def __init__(self, *args, normalize=True, noise_stddev=0.05, device,**kwargs):
+    def __init__(self, *args, normalize=True, noise_stddev=0.05, device,indicies=None,**kwargs):
         super().__init__(*args, **kwargs)
 
         # Scale data to [0,1]
@@ -195,7 +202,7 @@ class FastMNIST(MNIST):
             self.data += torch.randn_like(self.data) * noise_stddev
         # if noise_type != 'clean':
         #     self.targets=np.asarray([[self.targets[i]] for i in range(len(self.targets))])
-        #     self.noisy_labels, self.actual_noise_rate = noisify(dataset='mnist', train_labels=self.targets, noise_type=noise_type, noise_rate=noise_rate, num=num)
+        #     self.noisy_labels, self.transition_matrix = noisify(dataset='mnist', train_labels=self.targets, noise_type=noise_type, noise_rate=noise_rate, num=num)
         #     self.noisy_labels=[i[0] for i in self.noisy_labels]
         #     _targets=[i[0] for i in self.targets]
         #     self.noise_or_not = np.transpose(self.noisy_labels)==np.transpose(_targets)
@@ -203,6 +210,14 @@ class FastMNIST(MNIST):
         #     self.noisy_labels = torch.tensor(self.noisy_labels, dtype=torch.int64).to(device)
         # else:
         self.data, self.targets = self.data.to(device), self.targets.to(device)
+        try:
+            if indicies.any() != None:
+                indicies = torch.tensor(indicies,dtype=torch.int64).to(device)
+                self.data = self.data[indicies]
+                self.targets = self.targets[indicies]
+        except:
+            pass
+        
     def __getitem__(self, index: int) -> Tuple[torch.Tensor, int]:
         """
         Args:
@@ -237,7 +252,8 @@ def DirtyMNIST(
     noise_stddev=0.05,
     device=None,
     noise_type='symmetric',
-    noise_rate=0
+    noise_rate=0,
+    clean_indicies=None,ambiguous_indicies=None
 ):
     """
     DirtyMNIST
@@ -273,7 +289,7 @@ def DirtyMNIST(
         download=download,
         normalize=normalize,
         noise_stddev=noise_stddev,
-        device=device
+        device=device,  indicies = clean_indicies
     )
 
     amnist_dataset = AmbiguousMNIST(
@@ -284,7 +300,7 @@ def DirtyMNIST(
         download=download,
         normalize=normalize,
         noise_stddev=noise_stddev,
-        device=device,noise_type=noise_type,noise_rate=noise_rate
+        device=device,noise_type=noise_type,noise_rate=noise_rate, indicies=ambiguous_indicies
     )
 
     return torch.utils.data.ConcatDataset([mnist_dataset, amnist_dataset])

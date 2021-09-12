@@ -1,11 +1,12 @@
 import os
 import argparse
+from sklearn.utils import validation
 
 import torch
 import random
 import numpy as np
-import wandb
 from core.solver import load,train,test
+from core.cross_validation import cross_validation 
 
 def main(args):
     torch.cuda.set_device(args.gpu)
@@ -19,12 +20,24 @@ def main(args):
     np.random.seed(seed=0)
     random.seed(0)
     # init Solver
-    train_iter,val_iter,test_iter,MLN,config,dataset_config = load(args)
-    if args.train:
-        train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
+    if args.cross_validation:
+        cv = cross_validation(args)
+        cv.load_total_dataset()
+        cv.train_init()
+        torch.cuda.manual_seed_all(0)  # GPU seed
+        torch.manual_seed(seed=0)
+        np.random.seed(seed=0)
+        random.seed(0)
+        cv.load_new_dataset()
+        cv.gain_traisiton_matrix()
+        cv.train_full()
     else:
-        test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
-        
+        train_iter,val_iter,test_iter,MLN,config,dataset_config = load(args)
+        if args.train:
+            train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
+        else:
+            test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
+            
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     
@@ -47,8 +60,7 @@ if __name__ == '__main__':
     # Hyperparameters for learning
     parser.add_argument('--lr', type=float,default=1e-3,help='learing rate')
     parser.add_argument('--wd', type=float,default=5e-6,help='weight decay')
-    parser.add_argument('--lr_step', type=list,default=[50,100,150],help='learing rate schedular')
-    parser.add_argument('--lr_rate', type=float,default=0.5,help='learing rate schedular rate')
+    parser.add_argument('--lr_rate', type=float,default=0.2,help='learing rate schedular rate')
     parser.add_argument('--epoch', type=int,default=200,help='epoch')
 
     # Adaptive ratio schedular
@@ -62,62 +74,7 @@ if __name__ == '__main__':
     
     # save index
     parser.add_argument('--id', type=int,default=1,help='save index')
-    
-    # wandb
-    parser.add_argument('--wandb', type=int,default=0,help='use wandb')
-    parser.add_argument('--sweep', type=int,default=0,help='use wandb sweep')
 
+    parser.add_argument('--cross_validation', type=int,default=0,help='cross validation')
     args = parser.parse_args()
-
-    # W&B hyperparam sweep
-    if args.train:
-        print('train mode')
-        if args.sweep:
-            if args.data=='cifar100':
-                param_dict = {
-                'ratio1': {
-                    'values': [1,0.5,0.1,0.01,0.05,5,0.0]
-                },
-                'ratio2': {
-                    'values': [0.1]
-                }
-            }
-            elif args.data=='trec':
-                param_dict = {
-                'ratio1': {
-                    'values': [1,0.5,0.1,0.01,0.05,0.001,0.0]
-                },
-                'ratio2': {
-                    'values': [0.16666]
-                }
-            }
-            else:
-                param_dict = {
-                'lr_rate': {
-                    'values': [0.2,0.5,0.7]
-                },
-                'wd': {
-                    'values': [1e-4,1e-6,1e-5,1e-7]
-                }
-            }
-            sweep_config = {
-                'name': '{}_{}_{}'.format(args.data,args.mode,args.ER),
-                'method': 'grid', #grid, random
-                # 'method': 'random', #grid, random
-                'metric': {
-                    'name': 'loss',
-                    'goal': 'minimize'   
-                },
-                'parameters': param_dict
-            }
-            sweep_id = wandb.sweep(sweep_config, 
-                                project='MLN_sweep_{}_{}_{}'.format(args.data,args.mode,args.ER)
-                                #    project="rstruc-sweep"
-                                )
-            wandb.agent(sweep_id=sweep_id, function=lambda:main(args),count=20)
-            # wandb.agent(sweep_id=sweep_id, function=lambda:main(args), entity="jtk", count=10) # limit max num run (for random sweep)
-        else:
-            main(args)
-    else:
-        print('test mode')
-        main(args)
+    main(args)

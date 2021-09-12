@@ -1,0 +1,38 @@
+2021-07-11 23:17:14,712 INFO    Thread-12 :24173 [wandb_setup.py:_flush():69] setting env: {'project': 'MLN_sweep_mnist_symmetric_0.5', 'entity': 'jeongeun', 'root_dir': '/home/jeongeun/MLN_XRobust', 'run_id': '9vztkky8', 'sweep_param_path': '/home/jeongeun/MLN_XRobust/wandb/sweep-ansz6hr8/config-9vztkky8.yaml', 'sweep_id': 'ansz6hr8'}
+2021-07-11 23:17:14,712 INFO    Thread-12 :24173 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-07-11 23:17:14,712 INFO    Thread-12 :24173 [wandb_init.py:_log_setup():337] Logging user logs to /home/jeongeun/MLN_XRobust/wandb/run-20210711_231714-9vztkky8/logs/debug.log
+2021-07-11 23:17:14,713 INFO    Thread-12 :24173 [wandb_init.py:_log_setup():338] Logging internal logs to /home/jeongeun/MLN_XRobust/wandb/run-20210711_231714-9vztkky8/logs/debug-internal.log
+2021-07-11 23:17:14,713 INFO    Thread-12 :24173 [wandb_init.py:init():370] calling init triggers
+2021-07-11 23:17:14,713 INFO    Thread-12 :24173 [wandb_init.py:init():375] wandb.init called with sweep_config: {'ratio1': 10, 'ratio2': 0.1}
+config: {'k': 10, 'sig_min': 1, 'sig_max': 10, 'lr': 0.001, 'wd': 0.0001, 'lr_rate': 0.2}
+2021-07-11 23:17:14,713 INFO    Thread-12 :24173 [wandb_init.py:init():419] starting backend
+2021-07-11 23:17:14,713 INFO    Thread-12 :24173 [backend.py:_multiprocessing_setup():70] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-07-11 23:17:14,716 INFO    Thread-12 :24173 [backend.py:ensure_launched():135] starting backend process...
+2021-07-11 23:17:14,775 INFO    Thread-12 :24173 [backend.py:ensure_launched():139] started backend process with pid: 30302
+2021-07-11 23:17:14,790 INFO    Thread-12 :24173 [wandb_init.py:init():424] backend started and connected
+2021-07-11 23:17:14,792 INFO    Thread-12 :24173 [wandb_run.py:_config_callback():873] config_cb None None {'ratio1': 10, 'ratio2': 0.1}
+2021-07-11 23:17:14,793 INFO    Thread-12 :24173 [wandb_init.py:init():472] updated telemetry
+2021-07-11 23:17:14,794 INFO    Thread-12 :24173 [wandb_init.py:init():491] communicating current version
+2021-07-11 23:17:15,588 INFO    Thread-12 :24173 [wandb_init.py:init():496] got version response upgrade_message: "wandb version 0.10.33 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2021-07-11 23:17:15,588 INFO    Thread-12 :24173 [wandb_init.py:init():504] communicating run to backend with 30 second timeout
+2021-07-11 23:17:15,806 INFO    Thread-12 :24173 [wandb_init.py:init():529] starting run threads in backend
+2021-07-11 23:17:15,895 INFO    Thread-12 :24173 [wandb_run.py:_console_start():1624] atexit reg
+2021-07-11 23:17:15,895 INFO    Thread-12 :24173 [wandb_run.py:_redirect():1498] redirect: SettingsConsole.REDIRECT
+2021-07-11 23:17:15,895 INFO    Thread-12 :24173 [wandb_run.py:_redirect():1503] Redirecting console.
+2021-07-11 23:17:15,896 ERROR   Thread-12 :24173 [wandb_run.py:_redirect():1562] Failed to redirect.
+Traceback (most recent call last):
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/wandb_run.py", line 1555, in _redirect
+    out_redir.install()
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 709, in install
+    _WSCH.add_fd(self._pipe_read_fd)
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 659, in add_fd
+    self._register()
+  File "/home/jeongeun/.pyenv/versions/ue/lib/python3.8/site-packages/wandb/sdk/lib/redirect.py", line 644, in _register
+    old_handler = signal.signal(signal.SIGWINCH, lambda *_: None)
+  File "/home/jeongeun/.pyenv/versions/3.8.8/lib/python3.8/signal.py", line 47, in signal
+    handler = _signal.signal(_enum_to_int(signalnum), _enum_to_int(handler))
+ValueError: signal only works in main thread
+2021-07-11 23:17:15,896 INFO    Thread-12 :24173 [wandb_init.py:init():554] run started, returning control to user process
+2021-07-11 23:17:15,896 INFO    Thread-12 :24173 [wandb_watch.py:watch():40] Watching
+2021-07-11 23:22:31,657 INFO    Thread-12 :24173 [wandb_run.py:finish():1294] finishing run jeongeun/MLN_sweep_mnist_symmetric_0.5/9vztkky8

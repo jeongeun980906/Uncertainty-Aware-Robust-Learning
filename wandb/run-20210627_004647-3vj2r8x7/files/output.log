@@ -1,0 +1,18 @@
+{'k': 5, 'sig_min': 1, 'sig_max': 10, 'lr': 0.001, 'wd': 5e-06, 'lr_rate': 0.5, 'ratio1': 1, 'ratio2': 1}
+dir made
+Text name: ./res/mnist_symmetric_0.2/1_log.txt
+Namespace(ER=0.2, alpha=0.5, data='mnist', epoch=2, gpu=0, id=1, k=5, lr=0.001, lr_rate=0.5, lr_step=[50, 100, 150], mode='symmetric', ratio=1, ratio2=1, ratio_schedular=0, sampler=False, sig_max=10, sig_min=1, sweep=0, wandb=1, wd=5e-06)
+epoch:[0/2] loss:[2.3553] train_accr:[0.4084] Test_accr:[0.4958]
+mace_avg:[0.828] epis avg:[0.098] alea avg:[1.615]
+ce_loss:[2.1627] mace_loss:[0.8275] alea_loss:[1.6146] epis_loss:[-0.0985]
+mu1_entropy:[2.2292] mu2_entropy:[2.2292]
+[Train] alea:[1.611] epis:[0.096] pi_entropy: [0.98396]
+[Test] alea:[1.609] epis:[0.09561] pi_entropy:[0.97571]
+Traceback (most recent call last):
+  File "main.py", line 80, in <module>
+    main(args)
+  File "main.py", line 17, in main
+    solver.train(args)
+  File "/home/jeongeun/MLN_XRobust/core/solver.py", line 112, in train
+    'alea': test_res['alea_avg'],
+KeyError: 'alea_avg'

@@ -1,0 +1,6 @@
+wandb_version: 1
+
+lr_rate:
+  value: 0.2
+wd:
+  value: 1.0e-06
