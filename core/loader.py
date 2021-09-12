@@ -149,7 +149,7 @@ def build_dataset(args):
         
     elif DATASET=='dirty_mnist':
         train = DirtyMNIST("./data/", train=True, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
-        val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
+        val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type='clean',noise_rate=args.ER)
         test=None
         clean_test = FastMNIST("./data/",download=True,device='cuda')#,noise_type=noise_type,noise_rate=noise_rate)
         ambiguous_test = AmbiguousMNIST("./data/", train=False, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
@@ -176,7 +176,7 @@ def build_dataset(args):
         train = dirtyCIFAR10("./data/", train=True, download=True,transform=transform_train,
                                                         noise_type=args.mode,noise_rate=args.ER,alpha=args.alpha)
         val = dirtyCIFAR10("./data/", train=False, download=True,transform=transform_test,
-                                                        noise_type=args.mode,noise_rate=args.ER,alpha=args.alpha)
+                                                        noise_type=args.mode,test_noisy=False,noise_rate=args.ER,alpha=args.alpha)
         test=None
         clean_test = cleanCIFAR10("./data/",download=True,train=False,transform=transform_test)
         ambiguous_test = ambiguousCIFAR10("./data/", train=False, download=True, transform=transform_test,test_noisy=True,
