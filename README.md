@@ -1,5 +1,4 @@
 # Elucidating Robust Learning with Uncertainty-Aware Corruption Pattern Estimation
-![image](https://user-images.githubusercontent.com/57895587/138092197-a404114c-0fcc-49e0-96ab-bda191e8ca00.png)
 
 **Our contributions are as follows**
 
