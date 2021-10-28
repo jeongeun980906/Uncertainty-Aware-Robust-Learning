@@ -13,10 +13,26 @@
 </p>
 
 
-
 ## Introduction
 
 📋 Official implementation of Explainable Robust Learning MLN
+
+### Requirements
+
+```
+torch==1.7.1
+torchvision==0.8.2
+matplotlib==3.4.1
+scikit-learn==0.24.1
+gensim==4.0.1
+scipy==1.6.2
+seabotn==0.11.1
+Pillow==8.2.0
+```
+### Datasets
+Please download mannually TREC dataset
+**TREC**
+https://cogcomp.seas.upenn.edu/Data/QA/QC/
 
 ### 💡 Class Conditional Noise
 

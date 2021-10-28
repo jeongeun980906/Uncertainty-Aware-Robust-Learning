@@ -1,8 +1,5 @@
-from typing import Callable
-
 import torch
 import torch.utils.data
-import torchvision
 
 def make_weights_for_balanced_classes(images, nclasses):                        
     count = [0] * nclasses                                                      
