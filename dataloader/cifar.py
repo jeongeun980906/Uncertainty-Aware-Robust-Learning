@@ -47,7 +47,7 @@ class CIFAR10(data.Dataset):
 
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
-                 download=False,
+                 download=True,
                  noise_type=None, noise_rate=0.2, random_state=0,
                  test_noisy=False,num=None,indicies=None):
         self.root = os.path.expanduser(root)

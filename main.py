@@ -1,7 +1,5 @@
 import os
 import argparse
-from sklearn.utils import validation
-
 import torch
 import random
 import numpy as np
@@ -33,16 +31,16 @@ def main(args):
         cv.train_full()
     else:
         train_iter,val_iter,test_iter,MLN,config,dataset_config = load(args)
-        if args.train:
-            train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
-        else:
+        if args.eval:
             test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
+        else:
+            train(args,test_iter,MLN,config,dataset_config)
             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     
     # Training mode and dataset
-    parser.add_argument('--train', type=int,default=1,help='train or test')
+    parser.add_argument('--eval',action='store_true' ,default=False,help='train or test')
     parser.add_argument('--data', type=str,default='mnist',help='dataset',choices=["mnist",'cifar10','cifar100','trec','dirty_cifar10','dirty_mnist'])
     parser.add_argument('--sampler', type=bool,default=False,help='for imbalanced dataset')
 

@@ -49,7 +49,7 @@ class ambiguousCIFAR10(data.Dataset):
 
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
-                 download=False,
+                 download=True,
                  noise_type='symmetric', noise_rate=0.8, random_state=0,test_noisy=False,num=1,mix_type='mixup',
                     alpha=2, indicies=None):
         self.root = os.path.expanduser(root)

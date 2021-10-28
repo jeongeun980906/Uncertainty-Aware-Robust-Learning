@@ -1,14 +1,13 @@
 from sklearn.metrics import precision_recall_curve,roc_auc_score
 import seaborn as sns
 import matplotlib.pyplot as plt
-from mlxtend.plotting import heatmap
 import numpy as np
 import os
 import json
 from scipy.stats import kendalltau
 
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
+# plt.rc('text', usetex=True)
+# plt.rc('font', family='serif')
 
 def avg_total_variance(wm,tm):
     labels=wm.shape[0]
@@ -25,12 +24,7 @@ def kendall_tau(wm,tm):
 
 
 def plot_res_once(train_acc,test_acc,args,DIR):
-    if args.mode=='rp':
-        errType ='Permutattion'
-    elif args.mode=='rs':
-        errType ='Random Shuffle'
-    else:
-        errType=args.mode
+    errType=args.mode
     errRate=args.ER
     save_dir=DIR+str(args.id)+'_train_res.png'
     plt.figure(figsize=(7,5))
@@ -57,8 +51,7 @@ def plot_res(train_acc,test_acc,legend,name):
         plt.plot(test_acc[i],label='test',color='b',lw=2,ls='-',marker='')
         plt.legend(loc=4,fontsize='medium') 
     plt.tight_layout()
-    
-    plt.savefig(save_dir)
+    plt.show()
 
 def print_n_txt(_f,_chars,_addNewLine=True,_DO_PRINT=True):
     if _addNewLine: _f.write(_chars+'\n')
@@ -83,7 +76,7 @@ def save_log_dict(args,train_acc,test_acc):
         print(data)
         json.dump(data,json_file, indent=4)
 
-def plot_mu(out,args,true_noise,labels=10):
+def plot_tm_ccn(out,args,true_noise,labels=10):
     DIR1='./res/rate_res/{}_{}_{}/{}_test_mu.png'.format(args.data,args.mode,args.ER,args.id)
     DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
@@ -179,7 +172,7 @@ def plot_hist(clean_eval,ambiguous_eval,args):
     plt.savefig('./res/rate_res/{}_{}_{}/{}_hist.png'.format(args.data,args.mode,args.ER,args.id))
     return roc
 
-def plot_mu2(out,out2,true_noise,args):
+def plot_tm_sdn(out,out2,true_noise,args):
     DIR1='./res/rate_res/{}_{}_{}/{}_test_mu3.png'.format(args.data,args.mode,args.ER,args.id)
     DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
@@ -248,7 +241,7 @@ def plot_mu2(out,out2,true_noise,args):
     with open(DIR2,'w') as json_file:
         json.dump(save_log,json_file,indent=4)
 
-def plot_sigma2(out,out2,args):
+def plot_alea_sdn(out,out2,args):
     DIR3='./res/rate_res/{}_{}_{}/{}_test_sigma.png'.format(args.data,args.mode,args.ER,args.id)
     DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     sigma=out['sigma']

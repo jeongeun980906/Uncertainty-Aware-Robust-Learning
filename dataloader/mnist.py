@@ -37,7 +37,7 @@ class MNIST(data.Dataset):
     training_file = 'training.pt'
     test_file = 'test.pt'
 
-    def __init__(self, root, train=True, transform=None, target_transform=None, download=False,
+    def __init__(self, root, train=True, transform=None, target_transform=None, download=True,
                  noise_type=None, noise_rate=0.2, random_state=0,
                  num=None,test_noisy=False,indicies=None):
         self.root = os.path.expanduser(root)

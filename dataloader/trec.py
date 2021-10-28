@@ -4,7 +4,6 @@ import time
 import random
 import re
 from torch.utils.data import TensorDataset, DataLoader
-from torchsummary import summary
 import dataloader.preprocessing.data_helper as dh
 from dataloader.utils import noisify_trec_asymmetric,noisify_trec_symmetric
 from gensim.models.keyedvectors import KeyedVectors

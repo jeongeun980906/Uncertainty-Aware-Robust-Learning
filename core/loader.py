@@ -10,8 +10,6 @@ import torch.distributions as TD
 from torch.autograd import Variable
 from collections import OrderedDict
 from torchvision import datasets,transforms
-
-from wandb.wandb_controller import sweep
 from core.network import *
 from core.summary import *
 from dataloader.mnist import MNIST

@@ -23,23 +23,6 @@ def mln_gather(pi,mu,sigma):
            }
     return out
 
-def mln_prop(pi,mu):
-    mu      = torch.softmax(mu,dim=2) # [N x K x D]
-    top_pi,top_idx = torch.topk(pi,2,dim=1) # [N X n]
-    top_pi=torch.softmax(top_pi,dim=-1)
-    max_idx = torch.argmax(pi,dim=1) # [N]
-    max2_idx= top_idx[:,1] # [N]
-    idx1_gather=max_idx.unsqueeze(dim=-1).repeat(1,mu.shape[2]).unsqueeze(1)
-    idx2_gather = max2_idx.unsqueeze(dim=-1).repeat(1,mu.shape[2]).unsqueeze(1) # [N x 1 x D]
-    mu_sel=torch.gather(mu,dim=1,index=idx1_gather).squeeze(dim=1)
-    mu_sel2 = torch.gather(mu,dim=1,index=idx2_gather).squeeze(dim=1) # [N x D]
-    #print(mu_sel2)
-    mu2_entropy= -mu_sel2*torch.log(mu_sel2+1e-8) # [N X D]
-    mu2_entropy = torch.sum(mu2_entropy,dim=1)
-    mu1_entropy = -mu_sel*torch.log(mu_sel+1e-8) # [N X D]
-    mu1_entropy = torch.sum(mu1_entropy,dim=1)
-    return {'mu2_entropy':mu2_entropy,'mu1_entropy':mu1_entropy}
-
 def mln_eval(pi,mu,sigma,num,N=10):
     """
         :param pi:      [N x K]

@@ -2,7 +2,7 @@ import torch
 from core.loader import build_model,build_dataset
 from core.plot import *
 from core.loss import mace_loss
-from core.eval import func_eval,test_eval,func_eval2,get_th
+from core.eval import func_eval, mln_transitionmatrix, gather_uncertainty_sdn,get_th
 from dataloader.dirty_estimate import get_estimated_dataset
 
 import torch.optim as optim
@@ -98,8 +98,8 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     plot_res_once(train_acc,test_acc,args,DIR)
     if len(test_iter)==1:
         print(ratio1,ratio2)
-        out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
-        plot_mu(out,args,transition_matrix,labels)
+        out = mln_transitionmatrix(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
+        plot_tm_ccn(out,args,transition_matrix,labels)
         var=avg_total_variance(out['D3'],transition_matrix)
         rank=kendall_tau(out['D3'],transition_matrix)
         strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
@@ -107,8 +107,8 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
 
     else:
         N=dataset_config["num"]
-        clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
-        ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
+        clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,device)
+        ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,device)
         auroc = plot_hist(clean_eval,ambiguous_eval,args)
         strtemp=('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
                     (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
@@ -116,12 +116,12 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
         del test_iter
         e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
-        out1=test_eval(MLN,e_clean_iter,data_size,'cpu',N)
-        out2=test_eval(MLN,e_amb_iter,data_size,'cpu',N)
-        plot_mu2(out1,out2,transition_matrix,args)
-        plot_sigma2(out1,out2,args)
+        out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cpu',N)
+        out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cpu',N)
+        plot_tm_sdn(out1,out2,transition_matrix,args)
+        plot_alea_sdn(out1,out2,args)
 
-def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
+def test(args,test_iter,MLN,config,dataset_config):
     labels=int(dataset_config['num_classes'])
     transition_matrix = dataset_config['transition_matrix']
     device='cuda'
@@ -131,22 +131,22 @@ def test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     state_dict=torch.load('./ckpt/{}_{}_{}/MLN_{}.pt'.format(args.data,args.mode,args.ER,args.id))
     MLN.load_state_dict(state_dict)
     if len(test_iter)==1:
-        out = test_eval(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
-        plot_mu(out,args,transition_matrix,labels,ratio1,ratio2)
+        out = mln_transitionmatrix(MLN,test_iter[0],data_size,device,dataset_config["num"],labels)
+        plot_tm_ccn(out,args,transition_matrix,labels,ratio1,ratio2)
         var=avg_total_variance(out['D3'],transition_matrix)
         rank=kendall_tau(out['D3'],transition_matrix)
         print('avarage total variance: {} kendalltau: {}'.format(var,rank))
     else:
         N=dataset_config["num"]
-        clean_eval = func_eval2(MLN,test_iter[1],data_size,labels,device)
-        ambiguous_eval=func_eval2(MLN,test_iter[0],data_size,labels,device)
+        clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,labels,device)
+        ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,labels,device)
         print(ambiguous_eval['alea'],clean_eval['alea'])
         auroc = plot_hist(clean_eval,ambiguous_eval,args)
         print('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
                         (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
         indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
         e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
-        out1=test_eval(MLN,e_clean_iter,data_size,'cuda',N)
-        out2=test_eval(MLN,e_amb_iter,data_size,'cuda',N)
-        plot_mu2(out1,out2,transition_matrix,args)
-        plot_sigma2(out1,out2,args)
+        out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cuda',N)
+        out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cuda',N)
+        plot_tm_sdn(out1,out2,transition_matrix,args)
+        plot_alea_sdn(out1,out2,args)

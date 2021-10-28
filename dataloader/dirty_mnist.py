@@ -56,7 +56,7 @@ class AmbiguousMNIST(VisionDataset):
         train: bool = True,
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
-        download: bool = False,
+        download: bool = True,
         normalize: bool = True,
         noise_stddev=0.05,
         device=None,noise_type='symmetric',

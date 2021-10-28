@@ -47,7 +47,7 @@ def func_eval(model,data_iter,data_size,device):
         model.train() # back to train mode 
     return out_eval
 
-def func_eval2(model,data_iter,data_size,labels,device):
+def gather_uncertainty_sdn(model,data_iter,data_size,device):
     with torch.no_grad():
         n_total,n_correct,epis_unct_sum,alea_unct_sum = 0,0,0,0
         epis_ = list()
@@ -95,7 +95,7 @@ def func_eval2(model,data_iter,data_size,labels,device):
                         'pi_entropy_':pi_entropy_,'entropy_':entropy_}
     return out_eval
     
-def test_eval(model,data_iter,data_size,device,num,label=10):
+def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10):
     #false_label=torch.tensor([10]).to(device)
     with torch.no_grad():
         model.eval() # evaluate (affects DropOut and BN)
@@ -104,11 +104,7 @@ def test_eval(model,data_iter,data_size,device,num,label=10):
         D3=np.zeros((label,label))
         confusion_matrix = np.zeros((label,label))
         sigma_out={}
-        pi_dist1 = {}
-        pi_dist2 = {}
         for i in range(label):
-            pi_dist1[str(i)]=list()
-            pi_dist2[str(i)]=list()
             sigma_out[str(i)]=list()
         for batch_in,batch_out in data_iter:
             # Foraward path
@@ -124,18 +120,13 @@ def test_eval(model,data_iter,data_size,device,num,label=10):
             unct_out = mln_uncertainties(pi,mu,sigma)
             _,y = torch.max(mu_sel1,dim=-1)
             for i in range(batch_in.size(0)):
-                temp=out['top_pi'][i].cpu().numpy().tolist()
-                temp2=[temp[i]-temp[i+1] for i in range(num+2)]
-                temp2.append(out['pi_entropy'][i].cpu().item())
-                pi_dist1[str(y[i].item())].append(temp2)
-                pi_dist2[str(y[i].item())].append(temp)
                 D1[y[i].item()] +=mu_sel1[i].cpu().numpy()
                 D2[y[i].item()] +=mu_sel2[i].cpu().numpy()
                 D3[y[i].item()] +=mu_prime[i].cpu().numpy()
                 sigma_out[str(y[i].item())].append(unct_out['alea'][i].cpu().numpy().tolist())
                 confusion_matrix[y[i].item(),batch_out[i].item()]+=1
         model.train() # back to train mode 
-        out_eval = {'pi1':pi_dist1,'pi2':pi_dist2,'D1':D1,'D2':D2,'D3':D3,
+        out_eval = {'D1':D1,'D2':D2,'D3':D3,
                     'sigma':sigma_out,'confusion_matrix':confusion_matrix}
     return out_eval
 
