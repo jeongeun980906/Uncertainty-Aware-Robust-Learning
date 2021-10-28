@@ -34,6 +34,16 @@ Please download mannually TREC dataset
 **TREC**
 https://cogcomp.seas.upenn.edu/Data/QA/QC/
 
+## Reproducing results of the paper
+
+e.g., mnist on class conditional noise setting
+
+```
+cd scripts
+./ccn_mnist.sh
+
+```
+
 ### 💡 Class Conditional Noise
 
 **CIFAR10**
@@ -66,16 +76,6 @@ estimated noise transition matrix for partioned sets are:
 <p align="center">
   <img width="400" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/dirty_cifar10_tm.png">
 </p>
-
-## Reproducing results of the paper
-
-e.g., mnist on class conditional noise setting
-
-```
-cd scripts
-./ccn_mnist.sh
-
-```
 
 ## Citing our paper
 
