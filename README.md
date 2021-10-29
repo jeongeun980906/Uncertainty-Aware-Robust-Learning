@@ -8,6 +8,12 @@
 
 ✔️ We present a novel evaluation scheme for validating the set-dependent corruption pattern estimation performance.
 
+Objective
+<p align="center">
+  <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/fig1.png">
+</p>
+
+Architecture
 <p align="center">
   <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/fig1.png">
 </p>
