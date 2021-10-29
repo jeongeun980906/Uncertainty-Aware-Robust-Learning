@@ -26,7 +26,7 @@ matplotlib==3.4.1
 scikit-learn==0.24.1
 gensim==4.0.1
 scipy==1.6.2
-seabotn==0.11.1
+seaborn==0.11.1
 Pillow==8.2.0
 ```
 ### Datasets
