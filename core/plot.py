@@ -221,9 +221,8 @@ def plot_tm_sdn(out,out2,true_noise,args):
     ax8.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
     fig.savefig(DIR1)
-
-    with open(DIR2,'r') as json_file:
-        save_log = json.load(json_file)
+    
+    save_log={}
     save_log['TM_clean']=img3.tolist()
     save_log['GT_clean']=img10.tolist()
     save_log['TM_amb']=img7.tolist()

@@ -116,8 +116,8 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
         del test_iter
         e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
-        out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cpu',N)
-        out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cpu',N)
+        out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cuda',N)
+        out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cuda',N)
         plot_tm_sdn(out1,out2,transition_matrix,args)
         plot_alea_sdn(out1,out2,args)
 
@@ -138,8 +138,8 @@ def test(args,test_iter,MLN,config,dataset_config):
         print('avarage total variance: {} kendalltau: {}'.format(var,rank))
     else:
         N=dataset_config["num"]
-        clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,labels,device)
-        ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,labels,device)
+        clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,device)
+        ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,device)
         print(ambiguous_eval['alea'],clean_eval['alea'])
         auroc = plot_hist(clean_eval,ambiguous_eval,args)
         print('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
