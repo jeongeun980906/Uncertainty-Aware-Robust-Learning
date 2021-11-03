@@ -1,5 +1,13 @@
 # Elucidating Robust Learning with Uncertainty-Aware Corruption Pattern Estimation
 
+## Introduction
+
+📋 Official implementation of Explainable Robust Learning MLNThis repository is official im the following paper:
+
+**Elucidating Robust Learning with Uncertainty-Aware Corruption Pattern Estimation**
+
+[Arxiv](https://arxiv.org/abs/2111.01632)
+
 **Our contributions are as follows**
 
 ✔️ We propose a simple yet effective robust learning method leveraging a mixture of experts model on various noise settings.
@@ -8,20 +16,16 @@
 
 ✔️ We present a novel evaluation scheme for validating the set-dependent corruption pattern estimation performance.
 
-Objective
+**Objective**
 <p align="center">
   <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/fig1.png">
 </p>
 
-Architecture
+**Architecture**
 <p align="center">
   <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/fig1.png">
 </p>
 
-
-## Introduction
-
-📋 Official implementation of Explainable Robust Learning MLN
 
 ### Requirements
 
@@ -39,7 +43,7 @@ Pillow==8.2.0
 Please download mannually TREC dataset
 
 **TREC**
-https://cogcomp.seas.upenn.edu/Data/QA/QC/
+[TREC](https://cogcomp.seas.upenn.edu/Data/QA/QC/)
 
 ## Reproducing results of the paper
 
