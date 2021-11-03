@@ -32,9 +32,9 @@ def main(args):
     else:
         train_iter,val_iter,test_iter,MLN,config,dataset_config = load(args)
         if args.eval:
-            test(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
+            test(args,test_iter,MLN,config,dataset_config)
         else:
-            train(args,test_iter,MLN,config,dataset_config)
+            train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

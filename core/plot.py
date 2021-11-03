@@ -61,7 +61,7 @@ def print_n_txt(_f,_chars,_addNewLine=True,_DO_PRINT=True):
         print (_chars)
 
 def save_log_dict(args,train_acc,test_acc):
-    DIR_PATH='./res/log/'+str(args.data)+'_'+str(args.mode)+'_'+str(args.ER)+'_'+str(args.id)+'.json'
+    DIR_PATH='./res/{}_{}_{}/{}_log.json'.format(args.data,args.mode,args.ER,args.id)
     try:
         with open(DIR_PATH,'r') as json_file:
             data=json.load(json_file)
@@ -77,8 +77,8 @@ def save_log_dict(args,train_acc,test_acc):
         json.dump(data,json_file, indent=4)
 
 def plot_tm_ccn(out,args,true_noise,labels=10):
-    DIR1='./res/rate_res/{}_{}_{}/{}_test_mu.png'.format(args.data,args.mode,args.ER,args.id)
-    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
+    DIR1='./res/{}_{}_{}/{}_test_tm.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
     img2=out['D2']
     img3=out['D3']
@@ -103,14 +103,14 @@ def plot_tm_ccn(out,args,true_noise,labels=10):
     NOISE_TYPE=NOISE_TYPE.capitalize()
     if args.data=='cifar100':
         fig,(ax3,ax4) = plt.subplots(2,1, figsize=(12, 20))
-        fig.suptitle('{} {} {}\% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=30)
+        fig.suptitle('{} {} {}% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=30)
         ax3.set_title('Predicted',fontsize=25)
-        img = sns.heatmap(img3,ax=ax3)
+        img = sns.heatmap(img3,ax=ax3, cmap="YlGnBu", vmin=0, vmax=1)
         ax3.set_xlabel('Clean Label',fontsize=20)
         ax3.set_ylabel('Noisy Label',fontsize=20)
 
         ax4.set_title('True',fontsize=25)
-        img = sns.heatmap(img7,ax=ax4)
+        img = sns.heatmap(img7,ax=ax4, cmap="YlGnBu", vmin=0, vmax=1)
         ax4.set_xlabel('Clean Label',fontsize=20)
         ax4.set_ylabel('Noisy Label',fontsize=20)
         plt.tight_layout()
@@ -119,24 +119,19 @@ def plot_tm_ccn(out,args,true_noise,labels=10):
     else:
         #fig,((ax1,ax2),(ax3,ax4)) = plt.subplots(2, 2, figsize=(16, 16))
         fig, (ax3,ax4) = plt.subplots(2, 1, figsize=(6, 12))
-        fig.suptitle('{} {} {}\% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
+        fig.suptitle('{} {} {}% Transition Matrix'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
 
         ax3.set_title('Predicted',fontsize=18)
-        img = sns.heatmap(img3,ax=ax3,annot=True)
+        img = sns.heatmap(img3,ax=ax3,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
         ax3.set_xlabel('Clean Label',fontsize=15)
         ax3.set_ylabel('Noise Label',fontsize=15)
 
         ax4.set_title('True',fontsize=18)
-        img = sns.heatmap(img7,ax=ax4,annot=True)
+        img = sns.heatmap(img7,ax=ax4,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
         ax4.set_xlabel('Clean Label',fontsize=15)
         ax4.set_ylabel('Noisy Label',fontsize=15)
         plt.tight_layout()
         fig.savefig(DIR1)
-    try:
-        print('dir made')
-        os.mkdir('./res/rate_res/{}_{}_{}/'.format(args.data,args.mode,args.ER))
-    except FileExistsError:
-        pass
     save_log = {}
     save_log['TM']=img3.tolist()
     save_log['GT']=img7.tolist()
@@ -155,7 +150,7 @@ def plot_hist(clean_eval,ambiguous_eval,args):
     GT=[0 if i<size else 1 for i in range(2*size)]
     UTYPE = ['alea_','epis_','pi_entropy_','maxsoftmax_','entropy_']
     title = ['Aleatoric','Epistemic','$\pi$ Entropy','MaxSoftmax', 'Softmax Entropy']
-    plt.suptitle('Dirty {} {} {}\% Uncertainty Histogram\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=10)
+    plt.suptitle('Dirty {} {} {}% Uncertainty Histogram\n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=10)
     for i,u in enumerate(UTYPE):
         plt.subplot(3,2,i+1)
         plt.title(title[i])
@@ -164,17 +159,12 @@ def plot_hist(clean_eval,ambiguous_eval,args):
         plt.legend()
         EVAL=clean_eval[u]+ambiguous_eval[u]
         roc[u]=roc_auc_score(GT,EVAL)
-    try:
-        print('dir made')
-        os.mkdir('./res/rate_res/{}_{}_{}/'.format(args.data,args.mode,args.ER))
-    except FileExistsError:
-        pass
-    plt.savefig('./res/rate_res/{}_{}_{}/{}_hist.png'.format(args.data,args.mode,args.ER,args.id))
+    plt.savefig('./res/{}_{}_{}/{}_hist.png'.format(args.data,args.mode,args.ER,args.id))
     return roc
 
 def plot_tm_sdn(out,out2,true_noise,args):
-    DIR1='./res/rate_res/{}_{}_{}/{}_test_mu3.png'.format(args.data,args.mode,args.ER,args.id)
-    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
+    DIR1='./res/{}_{}_{}/{}_test_tm.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     img1=out['D1']
     img2=out['D2']
     img3=out['D3']
@@ -208,25 +198,25 @@ def plot_tm_sdn(out,out2,true_noise,args):
     NOISE_TYPE= args.mode
     NOISE_TYPE=NOISE_TYPE.capitalize()
     fig, ((ax3,ax7),(ax4,ax8)) = plt.subplots(2, 2, figsize=(12, 12))
-    fig.suptitle('Dirty {} {} {}\% Transition Matrix \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
+    fig.suptitle('Dirty {} {} {}% Transition Matrix \n'.format(NAME,NOISE_TYPE,NOISE_RATE),fontsize=20)
     ax3.set_title('Clean - Predicted',fontsize=18)
-    img = sns.heatmap(img3,ax=ax3,annot=True)
+    img = sns.heatmap(img3,ax=ax3,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
     ax3.set_xlabel('Clean Label',fontsize=15)
     ax3.set_ylabel('Noisy Label',fontsize=15)
 
     ax4.set_title('Clean - True',fontsize=18)
-    img = sns.heatmap(img10,ax=ax4,annot=True)
+    img = sns.heatmap(img10,ax=ax4,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
     ax4.set_xlabel('Clean Label',fontsize=15)
     ax4.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
 
     ax7.set_title('Ambiguous - Predicted',fontsize=18)
-    img = sns.heatmap(img7,ax=ax7,annot=True)
+    img = sns.heatmap(img7,ax=ax7,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
     ax7.set_xlabel('Clean Label',fontsize=15)
     ax7.set_ylabel('Noisy Label',fontsize=15)
 
     ax8.set_title('Ambiguous - True',fontsize=18)
-    img = sns.heatmap(img9,ax=ax8,annot=True)
+    img = sns.heatmap(img9,ax=ax8,annot=True, cmap="YlGnBu", vmin=0, vmax=1)
     ax8.set_xlabel('Clean Label',fontsize=15)
     ax8.set_ylabel('Noisy Label',fontsize=15)
     plt.tight_layout()
@@ -242,8 +232,8 @@ def plot_tm_sdn(out,out2,true_noise,args):
         json.dump(save_log,json_file,indent=4)
 
 def plot_alea_sdn(out,out2,args):
-    DIR3='./res/rate_res/{}_{}_{}/{}_test_sigma.png'.format(args.data,args.mode,args.ER,args.id)
-    DIR2='./res/rate_res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
+    DIR3='./res/{}_{}_{}/{}_test_alea.png'.format(args.data,args.mode,args.ER,args.id)
+    DIR2='./res/{}_{}_{}/{}_test.json'.format(args.data,args.mode,args.ER,args.id)
     sigma=out['sigma']
     sigma2 = out2['sigma']
     log = np.zeros(10)
@@ -282,7 +272,7 @@ def plot_alea_sdn(out,out2,args):
     NAME=NAME.upper()
     NOISE_RATE=int(args.ER*100)
     fig = plt.figure(figsize=(8, 5))
-    plt.title('{} {} {}\% Aleatoric Uncertainty \n'.format(NAME,args.mode,NOISE_RATE),fontsize=10)
+    plt.title('{} {} {}% Aleatoric Uncertainty \n'.format(NAME,args.mode,NOISE_RATE),fontsize=10)
     plt.xticks(x)
     if args.mode=='asymmetric':
         plt.ylim((MIN_SIG-0.005,MAX_SIG+0.003))

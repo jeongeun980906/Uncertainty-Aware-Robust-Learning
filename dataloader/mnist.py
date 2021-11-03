@@ -151,11 +151,11 @@ class MNIST(data.Dataset):
 
         for url in self.urls:
             print('Downloading ' + url)
-            # data = urllib.request.urlopen(url)
+            data = urllib.request.urlopen(url)
             filename = url.rpartition('/')[2]
             file_path = os.path.join(self.root, self.raw_folder, filename)
-            # with open(file_path, 'wb') as f:
-            #     f.write(data.read())
+            with open(file_path, 'wb') as f:
+                f.write(data.read())
             with open(file_path.replace('.gz', ''), 'wb') as out_f, \
                     gzip.GzipFile(file_path) as zip_f:
                 out_f.write(zip_f.read())

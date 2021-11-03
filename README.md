@@ -37,6 +37,7 @@ Pillow==8.2.0
 ```
 ### Datasets
 Please download mannually TREC dataset
+
 **TREC**
 https://cogcomp.seas.upenn.edu/Data/QA/QC/
 
@@ -45,6 +46,8 @@ https://cogcomp.seas.upenn.edu/Data/QA/QC/
 e.g., mnist on class conditional noise setting
 
 ```
+mkdir ckpt
+mkdir res
 cd scripts
 ./ccn_mnist.sh
 

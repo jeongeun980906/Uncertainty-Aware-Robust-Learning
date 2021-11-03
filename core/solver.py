@@ -34,8 +34,8 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     txtName = (DIR+str(args.id)+'_log.txt')
     try:
         print('dir made')
-        os.mkdir(DIR)
-        os.mkdir(cDIR)
+        os.makedirs(DIR)
+        os.makedirs(cDIR)
     except FileExistsError:
         pass
 

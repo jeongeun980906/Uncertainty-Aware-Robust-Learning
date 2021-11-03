@@ -1,3 +1,5 @@
 data/*
 .ipynb_checkpoints
 .python-version
+ckpt/*
+res/*
