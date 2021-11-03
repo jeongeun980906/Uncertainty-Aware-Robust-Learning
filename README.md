@@ -18,7 +18,7 @@
 
 **Objective**
 <p align="center">
-  <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/fig1.png">
+  <img width="600" height="auto" src="https://github.com/jeongeun980906/Explainable-Robust-Learning-MLN/blob/master/misc/Objective.png">
 </p>
 
 **Architecture**
