@@ -14,6 +14,7 @@ from core.network import *
 from core.summary import *
 from dataloader.mnist import MNIST
 from dataloader.cifar import CIFAR10,CIFAR100
+from dataloader.cifar2 import cifar_dataset
 from dataloader.trec import TREC
 from dataloader.dirty_cifar import dirtyCIFAR10,cleanCIFAR10,ambiguousCIFAR10
 from dataloader.dirty_mnist import DirtyMNIST,FastMNIST,AmbiguousMNIST
@@ -23,7 +24,7 @@ def build_model(args,device,trec_config=None):
     DATASET=args.data
     if DATASET=='mnist' or DATASET=='dirty_mnist':
         model = MixtureLogitNetwork_cnn2(name='mln',x_dim=[1,28,28],k_size=3,c_dims=[32,64,128],p_sizes=[2,2,2],
-                            h_dims=[128,64],y_dim=10,USE_BN=False,k=args.k,
+                            sigma = args.sigma,h_dims=[128,64],y_dim=10,USE_BN=False,k=args.k,
                             sig_min=1.0,sig_max=10, 
                             mu_min=-1,mu_max=+1,SHARE_SIG=True).to(device)
         summary_str,summary = summary_string(model,input_size=(1,28,28),device=device)
@@ -31,13 +32,20 @@ def build_model(args,device,trec_config=None):
         print (summary_str)
     elif DATASET == 'cifar10' or DATASET=='cifar100' or DATASET=='dirty_cifar10':
         labels=100 if DATASET=='cifar100' else 10
-        model= MixtureLogitNetwork_cnn(name='mln',x_dim=[3,32,32],c_dims = [64,64,128,128,196,16],h_dims=[],
-                            p_sizes= [2,2,2], k_size=3,y_dim=labels,USE_BN=True,k=args.k,
+        if args.resnet:
+            model= MixtureLogitNetwork_resnet(name='mln',x_dim=[3,32,32],
+                            sigma = args.sigma,k=args.k,y_dim = labels,
                             sig_min=args.sig_min,sig_max=args.sig_max, 
                             mu_min=-3,mu_max=+3,SHARE_SIG=True).to(device)
-        summary_str,summary = summary_string(model,input_size=(3,32,32),device=device)
-        print("network")
-        print (summary_str)
+        else:
+            model= MixtureLogitNetwork_cnn(name='mln',x_dim=[3,32,32],c_dims = [64,64,128,128,196,16],h_dims=[],
+                                p_sizes= [2,2,2], k_size=3,y_dim=labels,USE_BN=True,k=args.k,
+                                sig_min=args.sig_min,sig_max=args.sig_max, sigma = args.sigma,
+                                mu_min=-3,mu_max=+3,SHARE_SIG=True).to(device)
+
+        # summary_str,summary = summary_string(model,input_size=(3,32,32),device=device)
+        # print("network")
+        # print (summary_str)
     elif DATASET == 'trec':
         textcnn = SentenceCNN(nb_classes=6,
                         word_embedding_numpy=trec_config["initW"],
@@ -102,8 +110,11 @@ def build_dataset(args):
             test = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
                         noise_type='asymmetric2',noise_rate=args.ER,test_noisy=True,num=num)
         else:
-            train = CIFAR10(root='./data/',download=True,train=True,transform=transform_train,
-                        noise_type=args.mode,noise_rate=args.ER)
+            train = cifar_dataset(dataset = 'cifar10',root_dir='./data/cifar-10-batches-py'
+                        ,mode='all',transform=transform_train,noise_file = './data/cifar10_noise_file_{}_{}'.format(args.mode,args.ER),
+                        noise_mode=args.mode,r=args.ER)
+            # train = CIFAR10(root='./data/',download=True,train=True,transform=transform_train,
+            #             noise_type=args.mode,noise_rate=args.ER)
             val = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
                         noise_type=args.mode,noise_rate=args.ER,test_noisy=False)
             test = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
@@ -147,7 +158,7 @@ def build_dataset(args):
         
     elif DATASET=='dirty_mnist':
         train = DirtyMNIST("./data/", train=True, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
-        val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type='clean',noise_rate=args.ER)
+        val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type='clean',noise_rate=args.ER,test_noisy=False)
         test=None
         clean_test = FastMNIST("./data/",download=True,device='cuda')#,noise_type=noise_type,noise_rate=noise_rate)
         ambiguous_test = AmbiguousMNIST("./data/", train=False, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
@@ -181,7 +192,7 @@ def build_dataset(args):
                                                     noise_type=args.mode,noise_rate=args.ER,alpha=args.alpha)
 
     if DATASET != 'trec':
-        BATCH_SIZE = 128
+        BATCH_SIZE = args.batch_size
         if args.cross_validation:
             train_iter = torch.utils.data.DataLoader(train,batch_size=BATCH_SIZE,shuffle=False,num_workers=0)
         else:

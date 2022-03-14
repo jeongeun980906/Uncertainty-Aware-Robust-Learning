@@ -13,12 +13,14 @@ import torch.nn.functional as F
 import torch.distributions as TD
 from torch.autograd import Variable
 import numpy as np
+from core.resnet import *
 
 class MixtureOfLogits(nn.Module):
     def __init__(self,
                  in_dim     = 64,   # input feature dimension 
                  y_dim      = 10,   # number of classes 
                  k          = 5,    # number of mixtures
+                 sigma      = True,  # use sigma
                  sig_min    = 1e-4, # minimum sigma
                  sig_max    = None, # maximum sigma
                  SHARE_SIG  = True  # share sigma among mixture
@@ -27,6 +29,7 @@ class MixtureOfLogits(nn.Module):
         self.in_dim     = in_dim    # Q
         self.y_dim      = y_dim     # D
         self.k          = k         # K
+        self.sigma      = sigma
         self.sig_min    = sig_min
         self.sig_max    = sig_max
         self.SHARE_SIG  = SHARE_SIG
@@ -35,10 +38,11 @@ class MixtureOfLogits(nn.Module):
     def build_graph(self):
         self.fc_pi      = nn.Linear(self.in_dim,self.k)
         self.fc_mu      = nn.Linear(self.in_dim,self.k*self.y_dim)
-        if self.SHARE_SIG:
-            self.fc_sigma   = nn.Linear(self.in_dim,self.k)
-        else:
-            self.fc_sigma   = nn.Linear(self.in_dim,self.k*self.y_dim)
+        if self.sigma:
+            if self.SHARE_SIG:
+                self.fc_sigma   = nn.Linear(self.in_dim,self.k)
+            else:
+                self.fc_sigma   = nn.Linear(self.in_dim,self.k*self.y_dim)
 
     def forward(self,x):
         """
@@ -48,19 +52,23 @@ class MixtureOfLogits(nn.Module):
         pi              = torch.softmax(pi_logit,dim=1)                 # [N x K]
         mu              = self.fc_mu(x)                                 # [N x KD]
         mu              = torch.reshape(mu,(-1,self.k,self.y_dim))      # [N x K x D]
-        if self.SHARE_SIG:
-            sigma       = self.fc_sigma(x)                              # [N x K]
-            sigma       = sigma.unsqueeze(dim=-1)                       # [N x K x 1]
-            sigma       = sigma.expand_as(mu)                           # [N x K x D]
+        if self.sigma:
+            if self.SHARE_SIG:
+                sigma       = self.fc_sigma(x)                              # [N x K]
+                sigma       = sigma.unsqueeze(dim=-1)                       # [N x K x 1]
+                sigma       = sigma.expand_as(mu)                           # [N x K x D]
+            else:
+                sigma       = self.fc_sigma(x)                              # [N x KD]
+            sigma           = torch.reshape(sigma,(-1,self.k,self.y_dim))   # [N x K x D]
+            if self.sig_max is None:
+                sigma = self.sig_min + torch.exp(sigma)                     # [N x K x D]
+            else:
+                sig_range = (self.sig_max-self.sig_min)
+                sigma = self.sig_min + sig_range*torch.sigmoid(sigma)       # [N x K x D]
+            mol_out = {'pi':pi,'mu':mu,'sigma':sigma}
         else:
-            sigma       = self.fc_sigma(x)                              # [N x KD]
-        sigma           = torch.reshape(sigma,(-1,self.k,self.y_dim))   # [N x K x D]
-        if self.sig_max is None:
-            sigma = self.sig_min + torch.exp(sigma)                     # [N x K x D]
-        else:
-            sig_range = (self.sig_max-self.sig_min)
-            sigma = self.sig_min + sig_range*torch.sigmoid(sigma)       # [N x K x D]
-        mol_out = {'pi':pi,'mu':mu,'sigma':sigma}
+            mol_out = {'pi':pi, 'mu':mu}
+            # print(pi)
         return mol_out
 
 class MixtureLogitNetwork_cnn2(nn.Module):
@@ -73,6 +81,7 @@ class MixtureLogitNetwork_cnn2(nn.Module):
                  h_dims     = [128],        # hidden dimensions
                  y_dim      = 10,           # output dimension
                  USE_BN     = True,         # whether to use batch-norm
+                 sigma      = True,         # whether to use sigma
                  k          = 5,            # number of mixtures
                  sig_min    = 1e-4,         # minimum sigma
                  sig_max    = 10,           # maximum sigma
@@ -90,6 +99,7 @@ class MixtureLogitNetwork_cnn2(nn.Module):
         self.y_dim      = y_dim
         self.USE_BN     = USE_BN
         self.k          = k
+        self.sigma      = sigma
         self.sig_min    = sig_min
         self.sig_max    = sig_max
         self.mu_min     = mu_min
@@ -142,6 +152,7 @@ class MixtureLogitNetwork_cnn2(nn.Module):
             in_dim      = prev_h_dim,  
             y_dim       = self.y_dim, 
             k           = self.k,
+            sigma       = self.sigma,
             sig_min     = self.sig_min,
             sig_max     = self.sig_max,
             SHARE_SIG   = self.SHARE_SIG
@@ -178,6 +189,7 @@ class MixtureLogitNetwork_cnn(nn.Module):
                  h_dims     = [128],        # hidden dimensions
                  y_dim      = 10,           # output dimension
                  USE_BN     = True,         # whether to use batch-norm
+                 sigma      = True,         # whether to use attenuation term
                  k          = 5,            # number of mixtures
                  sig_min    = 1e-4,         # minimum sigma
                  sig_max    = 10,           # maximum sigma
@@ -195,6 +207,7 @@ class MixtureLogitNetwork_cnn(nn.Module):
         self.y_dim      = y_dim
         self.USE_BN     = USE_BN
         self.k          = k
+        self.sigma      = sigma
         self.sig_min    = sig_min
         self.sig_max    = sig_max
         self.mu_min     = mu_min
@@ -247,6 +260,7 @@ class MixtureLogitNetwork_cnn(nn.Module):
         mol = MixtureOfLogits(
             in_dim      = prev_h_dim,  
             y_dim       = self.y_dim, 
+            sigma       = self.sigma,
             k           = self.k,
             sig_min     = self.sig_min,
             sig_max     = self.sig_max,
@@ -326,6 +340,66 @@ class MixtureLogitNetwork_TextCNN(nn.Module):
             if isinstance(m,nn.Conv2d): # init conv
                 nn.init.kaiming_normal_(m.weight)
                 nn.init.zeros_(m.bias)
+            if isinstance(m,nn.Linear): # lnit dense
+                nn.init.kaiming_normal_(m.weight)
+                nn.init.zeros_(m.bias)
+        # Heuristic: fc_mu.bias ~ Uniform(mu_min,mu_max)
+        self.mol.fc_mu.bias.data.uniform_(self.mu_min,self.mu_max)
+        self.mol.fc_pi.bias.data.uniform_(-0.001,0.001)
+
+
+class MixtureLogitNetwork_resnet(nn.Module):
+    def __init__(self,
+                 name       = 'mln',        # name
+                 x_dim      = [1,28,28],    # input dimension
+                 y_dim      = 10,           # output dimension
+                 USE_BN     = True,         # whether to use batch-norm
+                 sigma      = True,          # whether to use sigma
+                 k          = 5,            # number of mixtures
+                 sig_min    = 1e-4,         # minimum sigma
+                 sig_max    = 10,           # maximum sigma
+                 mu_min     = -3,           # minimum mu (init)
+                 mu_max     = +3,           # maximum mu (init)
+                 SHARE_SIG  = True          
+                 ):
+        super(MixtureLogitNetwork_resnet,self).__init__()
+        self.name       = name
+        self.x_dim      = x_dim
+        self.y_dim      = y_dim
+        self.USE_BN     = USE_BN
+        self.k          = k
+        self.sigma      = sigma
+        self.sig_min    = sig_min
+        self.sig_max    = sig_max
+        self.mu_min     = mu_min
+        self.mu_max     = mu_max
+        self.SHARE_SIG  = SHARE_SIG
+        self.build_graph()
+        self.init_param()
+
+    def build_graph(self):
+        self.feature = ResNet18()
+        # Final mixture of logits layer
+        self.mol = MixtureOfLogits(
+            in_dim      = self.feature.hdim,  
+            y_dim       = self.y_dim, 
+            sigma       = self.sigma,
+            k           = self.k,
+            sig_min     = self.sig_min,
+            sig_max     = self.sig_max,
+            SHARE_SIG   = self.SHARE_SIG
+        )
+    def forward(self,x):
+        x = self.feature(x)
+        mln_out = self.mol(x)
+        return mln_out # mu:[N x K x D] / pi:[N x K] / sigma:[N x K x D]
+
+    def init_param(self):
+        for m in self.modules():
+            # print(m)
+            if isinstance(m,nn.Conv2d): # init conv
+                nn.init.kaiming_normal_(m.weight)
+                # nn.init.zeros_(m.bias)
             if isinstance(m,nn.Linear): # lnit dense
                 nn.init.kaiming_normal_(m.weight)
                 nn.init.zeros_(m.bias)

@@ -10,11 +10,11 @@ def get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean
               transforms.Normalize((0.49137255, 0.48235294, 0.44666667), (0.24705882, 0.24352941, 0.26156863)),
             ])
         clean_e_test = dirtyCIFAR10("./data", train=False, download=True,transform=transform_test,
-                                            noise_type=args.mode,noise_rate=args.ER,mix_type=args.mixtype,
+                                            noise_type=args.mode,noise_rate=args.ER,mix_type='cutmix',
                                             alpha=args.alpha,clean_indicies=indices_clean1,ambiguous_indicies=indices_amb1)
 
         amb_e_test = dirtyCIFAR10("./data", train=False, download=True,transform=transform_test,
-                                            noise_type=args.mode,noise_rate=args.ER,mix_type=args.mixtype,
+                                            noise_type=args.mode,noise_rate=args.ER,mix_type='cutmix',
                                             alpha=args.alpha,clean_indicies=indices_clean2,ambiguous_indicies=indices_amb2)
     elif args.data == 'dirty_mnist':
         clean_e_test = DirtyMNIST("./data", train=False, download=True, device="cpu",noise_type=args.mode,noise_rate=args.ER,

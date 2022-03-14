@@ -59,7 +59,7 @@ class AmbiguousMNIST(VisionDataset):
         download: bool = True,
         normalize: bool = True,
         noise_stddev=0.05,
-        device=None,noise_type='symmetric',
+        device=None,noise_type='symmetric',test_noisy=True,
         noise_rate=0.2,num=2, indicies=None
     ):
         super().__init__(root, transform=transform, target_transform=target_transform)
@@ -79,12 +79,19 @@ class AmbiguousMNIST(VisionDataset):
         num_multi_labels = self.targets.shape[1]
 
         # Flatten the multi-label dataset into a single-label dataset with samples repeated x `num_multi_labels` many times
-        self.data = self.data.expand(-1, num_multi_labels, 28, 28).reshape(-1, 1, 28, 28)
+        self.data = self.data.expand(-1, num_multi_labels, 28, 28).reshape(-1,1, 28, 28)
         self.targets = self.targets.reshape(-1)
 
-        data_range = slice(None, 60000) if self.train else slice(60000, None)
+        if self.train:
+            data_range = slice(None,60000)
+        else:
+            if test_noisy:
+                data_range = slice(60000,None)
+            else:
+                data_range = slice(60000,60000)
+        # data_range = slice(None, 60000) if self.train slice(60000,None) elif test_noisy else slice(None, None)
         self.data = self.data[data_range]
-
+        print(self.data.shape)
         if noise_stddev > 0.0:
             self.data += torch.randn_like(self.data) * noise_stddev
 
@@ -252,7 +259,7 @@ def DirtyMNIST(
     noise_stddev=0.05,
     device=None,
     noise_type='symmetric',
-    noise_rate=0,
+    noise_rate=0,test_noisy=True,
     clean_indicies=None,ambiguous_indicies=None
 ):
     """
@@ -299,7 +306,7 @@ def DirtyMNIST(
         target_transform=target_transform,
         download=download,
         normalize=normalize,
-        noise_stddev=noise_stddev,
+        noise_stddev=noise_stddev,test_noisy = test_noisy,
         device=device,noise_type=noise_type,noise_rate=noise_rate, indicies=ambiguous_indicies
     )
 

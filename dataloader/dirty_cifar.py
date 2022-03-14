@@ -50,8 +50,8 @@ class ambiguousCIFAR10(data.Dataset):
     def __init__(self, root, train=True,
                  transform=None, target_transform=None,
                  download=True,
-                 noise_type='symmetric', noise_rate=0.8, random_state=0,test_noisy=False,num=1,mix_type='mixup',
-                    alpha=2, indicies=None):
+                 noise_type='symmetric', noise_rate=0.8, random_state=0,test_noisy=False,num=1,
+                 mix_type='cutmix',alpha=2, indicies=None):
         self.root = os.path.expanduser(root)
         self.transform = transform
         self.target_transform = target_transform
@@ -126,12 +126,13 @@ class ambiguousCIFAR10(data.Dataset):
             self.test_labels = self.test_labels[:5000]
             self.test_data = self.test_data.reshape((5000, 3, 32, 32))
             self.test_data = self.test_data.transpose((0, 2, 3, 1))  # convert to HWC
-            if mix_type=='mixup':
-                self.test_data=mixup(self.test_data,self.test_labels,alpha)
-            elif mix_type == 'cutmix':
-                self.test_data=cutmix(self.test_data,self.test_labels,alpha)
+            
             if test_noisy:
-                # noisify tesr data
+                if mix_type=='mixup':
+                    self.test_data=mixup(self.test_data,self.test_labels,alpha)
+                elif mix_type == 'cutmix':
+                    self.test_data=cutmix(self.test_data,self.test_labels,alpha)
+                # noisify test data
                 self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
                 self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
                 try:

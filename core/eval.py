@@ -3,7 +3,7 @@ from core.loss import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-def func_eval(model,data_iter,data_size,device):
+def func_eval(model,data_iter,data_size,device,use_sigma=True):
     with torch.no_grad():
         n_total,n_correct,epis_unct_sum,alea_unct_sum,entropy_pi_sum,top2_pi_sum = 0,0,0,0,0,0
         y_probs= list()
@@ -15,11 +15,19 @@ def func_eval(model,data_iter,data_size,device):
                 mln_out     = model.forward(batch_in.to(device))
             else:
                 mln_out     = model.forward(batch_in.view(data_size).to(device))
-            pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
-            out         = mln_gather(pi,mu,sigma)
-            model_pred  = out['mu_sel'] # [B x N]
+            if use_sigma:
+                pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
+                out         = mln_gather(pi,mu,sigma)
+                model_pred  = out['mu_sel'] # [B x N]
 
-            unct_out    = mln_uncertainties(pi,mu,sigma)
+                unct_out    = mln_uncertainties(pi,mu,sigma)
+            else:
+                pi,mu = mln_out['pi'],mln_out['mu']
+                out = mln_gather(pi,mu,None)
+                model_pred  = out['mu_sel'] # [B x N]
+
+                unct_out = mln_uncertainties2(pi,mu)
+
             epis_unct   = unct_out['epis'] # [N]
             alea_unct   = unct_out['alea'] # [N]            entropy_pi  = -pi*torch.log(pi)
             entropy_pi  = unct_out['pi_entropy']
@@ -95,7 +103,7 @@ def gather_uncertainty_sdn(model,data_iter,data_size,device):
                         'pi_entropy_':pi_entropy_,'entropy_':entropy_}
     return out_eval
     
-def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10):
+def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10,use_sigma=True):
     #false_label=torch.tensor([10]).to(device)
     with torch.no_grad():
         model.eval() # evaluate (affects DropOut and BN)
@@ -112,8 +120,12 @@ def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10):
                 mln_out     = model.forward(batch_in.to(device))
             else:
                 mln_out     = model.forward(batch_in.view(data_size).to(device))
-            pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
-            out = mln_eval(pi,mu,sigma,num+3,label)
+            if use_sigma:
+                pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
+                out = mln_eval(pi,mu,sigma,num+3,label)
+            else:
+                pi,mu = mln_out['pi'], mln_out['mu']
+                out = mln_eval2(pi,mu,3,label)
             mu_prime=out['mu_prime']
             mu_sel1=out['mu_sel'] # [N x D]
             mu_sel2=out['mu_sel2']

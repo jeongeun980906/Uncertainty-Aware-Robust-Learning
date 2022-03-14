@@ -15,12 +15,19 @@ def mln_gather(pi,mu,sigma):
     mu      = torch.softmax(mu,dim=2) #[N x K x D]
     idx_gather = max_idx.unsqueeze(dim=-1).repeat(1,mu.shape[2]).unsqueeze(1) # [N x 1 x D]
     mu_sel = torch.gather(mu,dim=1,index=idx_gather).squeeze(dim=1) # [N x D]
-    sigma_sel = torch.gather(sigma,dim=1,index=idx_gather).squeeze(dim=1) # [N x D]
-    out = {'max_idx':max_idx, # [N]
+    if sigma != None:
+        sigma_sel = torch.gather(sigma,dim=1,index=idx_gather).squeeze(dim=1) # [N x D]
+        out = {'max_idx':max_idx, # [N]
            'idx_gather':idx_gather, # [N x 1 x D]
            'mu_sel':mu_sel, # [N x D]
            'sigma_sel':sigma_sel # [N x D]
            }
+    else:
+        out = {
+            'max_idx':max_idx, # [N]
+           'idx_gather':idx_gather, # [N x 1 x D]
+           'mu_sel':mu_sel, # [N x D]
+        }
     return out
 
 def mln_eval(pi,mu,sigma,num,N=10):
@@ -118,6 +125,85 @@ def mace_loss(pi,mu,sigma,target):
                 }
     return loss_out
 
+def mce_loss(pi,mu,target):
+    # $\mu$
+    mu_hat = torch.softmax(mu,dim=2) # logit to prob [N x K x D]
+    log_mu_hat = torch.log(mu_hat+1e-6) # [N x K x D]
+    # $\pi$
+    pi_usq = torch.unsqueeze(pi,2) # [N x K x 1]
+    pi_exp = pi_usq.expand_as(mu) # [N x K x D]
+    # target
+    target_usq =  torch.unsqueeze(target,1) # [N x 1 x D]
+    target_exp =  target_usq.expand_as(mu) # [N x K x D]
+
+    # CE loss
+    ce_exp = -target_exp*log_mu_hat # CE [N x K x D]
+    # Mixture CE loss
+    mce_exp = torch.mul(pi_exp,ce_exp) # [N x K x D]
+    mce = torch.sum(mce_exp,dim=1) # [N x D]
+    mce = torch.sum(mce,dim=1) # [N]
+    mce_avg = torch.mean(mce) # [1]
+
+    # Compute uncertainties (epis and alea)
+    unct_out = mln_uncertainties2(pi,mu)
+    epis = unct_out['epis'] # [N]
+    alea = unct_out['alea'] # [N]
+    pi_entropy = unct_out['pi_entropy'] # [N]
+    epis_avg = torch.mean(epis) # [1]
+    alea_avg = torch.mean(alea) # [1]
+    pi_entropy_avg=torch.mean(pi_entropy) # [1]
+    # Return
+    loss_out = {'mce_avg':mce_avg, # [1]
+                'epis':epis, # [N]
+                'alea':alea, # [N]
+                'epis_avg':epis_avg, # [1]
+                'alea_avg':alea_avg, # [1],
+                'pi_entropy':pi_entropy, # [N]
+                'pi_entropy_avg':pi_entropy_avg # [1]
+                }
+
+    return loss_out
+
+def mln_eval2(pi,mu,num,N=10):
+    """
+        :param pi:      [N x K]
+        :param mu:      [N x K x D]
+    """
+    top_pi,top_idx = torch.topk(pi,num,dim=1) # [N X n]
+    top_pi=torch.softmax(top_pi,dim=-1)
+    max_idx = torch.argmax(pi,dim=1) # [N]
+    max2_idx= top_idx[:,1] # [N]
+
+    mu      = torch.softmax(mu,dim=2) # [N x K x D]
+    mu_max = torch.argmax(mu,dim=2) # [N x K]
+    mu_onehot=_to_one_hot(mu_max,N)
+
+    pi_usq = torch.unsqueeze(pi,2) # [N x K x 1]
+    pi_exp = pi_usq.expand_as(sigma) # [N x K x D]
+
+    mu_exp = torch.mul(pi_exp,mu_onehot) # mixtured mu [N x K x D]
+    mu_prime = torch.sum(mu_exp,dim=1) # [N x D]
+
+    idx1_gather = max_idx.unsqueeze(dim=-1).repeat(1,mu.shape[2]).unsqueeze(1) # [N x 1 x D]
+    mu_sel = torch.gather(mu,dim=1,index=idx1_gather).squeeze(dim=1) # [N x D]
+    # sigma_sel = torch.gather(sigma,dim=1,index=idx1_gather).squeeze(dim=1) # [N x D]
+
+    idx2_gather = max2_idx.unsqueeze(dim=-1).repeat(1,mu.shape[2]).unsqueeze(1) # [N x 1 x D]
+    mu_sel2 = torch.gather(mu,dim=1,index=idx2_gather).squeeze(dim=1) # [N x D]
+    # sigma_sel2 = torch.gather(sigma,dim=1,index=idx2_gather).squeeze(dim=1) # [N x D]
+   
+    unct_out = mln_uncertainties2(pi,mu)
+    pi_entropy = unct_out['pi_entropy'] # [N]
+
+    out = {'max_idx':max_idx, # [N]
+           'mu_sel':mu_sel, # [N x D]
+           'mu_sel2':mu_sel2, # [N x D]
+           'mu_prime': mu_prime, # [N x D]
+           'pi_entropy': pi_entropy, # [N]
+           'top_pi':top_pi
+           }
+    return out
+
 def kendal_loss(pi,mu,sigma,target):
     """
         :param pi:      [N x K]
@@ -191,6 +277,45 @@ def mln_uncertainties(pi,mu,sigma):
                 'pi_entropy':entropy_pi,'top_pi':top_pi
                 }
     return unct_out
+
+
+def mln_uncertainties2(pi,mu):
+    """
+        :param pi:      [N x K]
+        :param mu:      [N x K x D]
+    """
+    # entropy of pi
+    entropy_pi  = -pi*torch.log(pi+1e-8)
+    entropy_pi  = torch.sum(entropy_pi,1) #[N]
+    # $\pi$
+    mu_hat = torch.softmax(mu,dim=2) # logit to prob [N x K x D]
+    pi_usq = torch.unsqueeze(pi,2) # [N x K x 1]
+    pi_exp = pi_usq.expand_as(mu) # [N x K x D]
+    # softmax($\mu$) average
+    mu_hat_avg = torch.sum(torch.mul(pi_exp,mu_hat),dim=1).unsqueeze(1) # [N x 1 x D]
+    mu_hat_avg_exp = mu_hat_avg.expand_as(mu) # [N x K x D]
+    mu_hat_diff_sq = torch.square(mu_hat-mu_hat_avg_exp) # [N x K x D]
+    # Epistemic uncertainty
+    epis = torch.sum(torch.mul(pi_exp,mu_hat_diff_sq), dim=1)  # [N x D]
+    epis = torch.sqrt(torch.sum(epis,dim=1)+1e-6) # [N]
+    # Aleatoric uncertainty
+    max_idx = torch.argmax(pi,dim=1) # [N]
+    idx_gather = max_idx.unsqueeze(dim=-1).repeat(1,mu_hat.shape[2]).unsqueeze(1) # [N x 1 x D]
+    mu_sel = torch.gather(mu_hat,dim=1,index=idx_gather).squeeze(dim=1) # [N x D]
+    alea = -mu_sel*torch.log(mu_sel+1e-8) # [N x D]
+    alea = torch.sum(alea,1) # [N]
+    try:
+        top_pi,top_idx = torch.topk(pi,2,dim=1) # [N X 2]
+    except:
+        top_pi, top_idx = torch.zeros((pi.shape[0],2)),None
+    # Return
+    unct_out = {'epis':epis, # [N]
+                'alea':alea,  # [N]
+                'pi_entropy':entropy_pi, # [N]
+                'top_pi':top_pi
+                }
+    return unct_out
+
 
 def _to_one_hot(y, num_classes):
     scatter_dim = len(y.size())
