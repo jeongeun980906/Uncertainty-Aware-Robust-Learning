@@ -86,12 +86,12 @@ class AmbiguousMNIST(VisionDataset):
             data_range = slice(None,60000)
         else:
             if test_noisy:
-                data_range = slice(60000,None)
+                data_range = slice(60000,120000,6)
             else:
                 data_range = slice(60000,60000)
         # data_range = slice(None, 60000) if self.train slice(60000,None) elif test_noisy else slice(None, None)
         self.data = self.data[data_range]
-        print(self.data.shape)
+        print('noisy',self.train,self.data.shape)
         if noise_stddev > 0.0:
             self.data += torch.randn_like(self.data) * noise_stddev
 
@@ -217,6 +217,7 @@ class FastMNIST(MNIST):
         #     self.noisy_labels = torch.tensor(self.noisy_labels, dtype=torch.int64).to(device)
         # else:
         self.data, self.targets = self.data.to(device), self.targets.to(device)
+        print('clean',self.train,self.data.shape)
         try:
             if indicies.any() != None:
                 indicies = torch.tensor(indicies,dtype=torch.int64).to(device)

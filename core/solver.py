@@ -146,8 +146,20 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
         out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cuda',N)
         out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cuda',N)
+        
         plot_tm_sdn(out1,out2,transition_matrix,args)
         plot_alea_sdn(out1,out2,args)
+
+        var=avg_total_variance(out1['D3'],np.eye(labels))
+        rank=kendall_tau(out1['D3'],np.eye(labels))
+        strtemp = ('avarage total variance_clean: {} kendalltau_clean {}'.format(var,rank))
+        print_n_txt(_f=f,_chars=strtemp)
+
+        var=avg_total_variance(out2['D3'],transition_matrix)
+        rank=kendall_tau(out2['D3'],transition_matrix)
+        strtemp = ('avarage total variance_ambiguous: {} kendalltau_ambiguous {}'.format(var,rank))
+        print_n_txt(_f=f,_chars=strtemp)
+
 
 def test(args,test_iter,MLN,config,dataset_config):
     labels=int(dataset_config['num_classes'])

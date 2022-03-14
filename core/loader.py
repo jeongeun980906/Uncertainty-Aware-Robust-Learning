@@ -160,7 +160,7 @@ def build_dataset(args):
         train = DirtyMNIST("./data/", train=True, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
         val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type='clean',noise_rate=args.ER,test_noisy=False)
         test=None
-        clean_test = FastMNIST("./data/",download=True,device='cuda')#,noise_type=noise_type,noise_rate=noise_rate)
+        clean_test = FastMNIST("./data/",train=False, download=True,device='cuda')#,noise_type=noise_type,noise_rate=noise_rate)
         ambiguous_test = AmbiguousMNIST("./data/", train=False, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
         num=1
         input_size=(-1,1,28,28)
