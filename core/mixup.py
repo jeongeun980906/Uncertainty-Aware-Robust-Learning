@@ -15,6 +15,6 @@ def mixup_data(x, y, alpha=1.0, use_cuda=True):
         index = torch.randperm(batch_size)
 
     mixed_x = lam * x + (1 - lam) * x[index, :]
-    y = torch.eye(10)[y]
-    mixed_y = lam* y + (1-lam)*y[index,:]
-    return mixed_x, mixed_y
+    # y = torch.eye(10)[y]
+    # mixed_y = lam* y + (1-lam)*y[index,:]
+    return mixed_x, y,y[index],lam

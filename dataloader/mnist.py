@@ -7,7 +7,7 @@ import errno
 import numpy as np
 import torch
 import codecs
-from dataloader.utils import noisify
+from dataloader.utils import noisify,noisify_instance_dependent
 
 
 class MNIST(data.Dataset):
@@ -60,11 +60,17 @@ class MNIST(data.Dataset):
                 os.path.join(self.root, self.processed_folder, self.training_file))
             # print(indicies)
             if noise_type != 'clean':
-                self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
-                self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, noise_rate=noise_rate, num=self.num,random_state=random_state)
-                self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
-                _train_labels=[i[0] for i in self.train_labels]
-                self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+                if noise_type != 'instance':
+                    self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
+                    self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, noise_rate=noise_rate, num=self.num,random_state=random_state)
+                    self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
+                    _train_labels=[i[0] for i in self.train_labels]
+                    self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+                else:
+                    self.train_labels = self.train_labels.numpy().tolist()
+                    self.train_noisy_labels, self.noise_or_not = noisify_instance_dependent(self.train_data.numpy(),self.train_labels,noise_rate = noise_rate,img_size=28*28*1)
+                    self.transition_matrix = None
+                    print('actual noise',self.noise_or_not)
             try:
                 if indicies != None:
                     print('check')
@@ -82,12 +88,18 @@ class MNIST(data.Dataset):
             self.test_data, self.test_labels = torch.load(
                 os.path.join(self.root, self.processed_folder, self.test_file))
             if test_noisy:
-                self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
-                self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, noise_rate=noise_rate, num=self.num,random_state=random_state)
-                self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
-                _test_labels=[i[0] for i in self.test_labels]
-                self.noise_or_not = np.transpose(self.test_noisy_labels)==np.transpose(_test_labels)
-    
+                if noise_type != 'instance':
+                    self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
+                    self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type, noise_rate=noise_rate, num=self.num,random_state=random_state)
+                    self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
+                    _test_labels=[i[0] for i in self.test_labels]
+                    self.noise_or_not = np.transpose(self.test_noisy_labels)==np.transpose(_test_labels)
+                else:
+                    self.test_labels = self.test_labels.numpy().tolist()
+                    self.test_noisy_labels, self.noise_or_not = noisify_instance_dependent(self.test_data.numpy(),self.test_labels,noise_rate = noise_rate,img_size=28*28*1)
+                    self.transition_matrix = None
+                    print('actual noise',self.noise_or_not)
+
     def __getitem__(self, index):
         """
         Args:

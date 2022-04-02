@@ -6,6 +6,8 @@ import errno
 import random
 import numpy as np
 from numpy.testing import assert_array_almost_equal
+import torch
+import torch.nn.functional as F 
 
 def check_integrity(fpath, md5):
     if not os.path.isfile(fpath):
@@ -463,3 +465,32 @@ def noisify(dataset='mnist', nb_classes=10, train_labels=None, noise_type=None, 
         elif dataset == 'cifar10':
             train_noisy_labels, actual_noise_rate = noisify_cifar10_asymmetric_custom(train_labels, noise_rate, num, random_state=random_state)
     return train_noisy_labels, actual_noise_rate
+
+
+
+def noisify_instance_dependent(train_data,train_labels,noise_rate,img_size=32*32*3):
+    if max(train_labels)>10:
+        num_class = 100
+    else:
+        num_class = 10
+    np.random.seed(0)
+
+    q_ = np.random.normal(loc=noise_rate,scale=0.1,size=1000000)
+    q = []
+    for pro in q_:
+        if 0 < pro < 1:
+            q.append(pro)
+        if len(q)==len(train_data):
+            break
+    w = np.random.normal(loc=0,scale=1,size=(img_size,num_class))
+
+    noisy_labels = []
+    for i, sample in enumerate(train_data):
+        sample = sample.flatten()
+        p_all = np.matmul(sample,w)
+        p_all[train_labels[i]] = -1000000
+        p_all = q[i]* F.softmax(torch.tensor(p_all),dim=0).numpy()
+        p_all[train_labels[i]] = 1 - q[i]
+        noisy_labels.append(np.random.choice(np.arange(num_class),p=p_all/sum(p_all)))
+    over_all_noise_rate = (torch.tensor(train_labels)!=(torch.tensor(noisy_labels))).sum()/len(train_data)
+    return noisy_labels, over_all_noise_rate

@@ -37,16 +37,15 @@ def main(args):
             train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config)
             
 if __name__ == '__main__':
-    # print("양심이없으시군요. gpu를 몇개나쓰시는겁니까 -> 죄송합니다....")
     parser = argparse.ArgumentParser()
     
     # Training mode and dataset
     parser.add_argument('--eval',action='store_true' ,default=False,help='train or test')
-    parser.add_argument('--data', type=str,default='mnist',help='dataset',choices=["mnist",'cifar10','cifar100','trec','dirty_cifar10','dirty_mnist'])
+    parser.add_argument('--data', type=str,default='mnist',help='dataset',choices=["mnist",'cifar10','cifar100','trec','dirty_cifar10','dirty_mnist','clothing1m'])
     parser.add_argument('--sampler', type=bool,default=False,help='for imbalanced dataset')
     parser.add_argument('--batch_size', type=int,default=128,help='batch size') 
     # Noise Type
-    parser.add_argument('--mode', type=str,default='symmetric',help='Noise Pattern')
+    parser.add_argument('--mode', type=str,default='symmetric',choices = ['symmetric','asymmetric','clean','instance'],help='Noise Pattern')
     parser.add_argument('--ER', type=float,default=0.2,help='Noise Rate')
     
     # parser.add_argument('--none',default=False,action = 'store_true',help='do not use mixtures') 

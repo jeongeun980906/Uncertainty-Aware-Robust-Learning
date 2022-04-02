@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torch.distributions as TD
 from torch.autograd import Variable
 import numpy as np
+import torchvision.models as models
 
 import torch
 import torch.nn as nn
@@ -13,7 +14,7 @@ import torch.nn.functional as F
 import torch.distributions as TD
 from torch.autograd import Variable
 import numpy as np
-from core.resnet import *
+from core.backbones.resnet import resnet50
 
 class MixtureOfLogits(nn.Module):
     def __init__(self,
@@ -378,10 +379,10 @@ class MixtureLogitNetwork_resnet(nn.Module):
         self.init_param()
 
     def build_graph(self):
-        self.feature = ResNet18()
+        self.feature = resnet50(pretrained=True)
         # Final mixture of logits layer
         self.mol = MixtureOfLogits(
-            in_dim      = self.feature.hdim,  
+            in_dim      = 2048, #self.feature.hdim,  
             y_dim       = self.y_dim, 
             sigma       = self.sigma,
             k           = self.k,
@@ -395,14 +396,14 @@ class MixtureLogitNetwork_resnet(nn.Module):
         return mln_out # mu:[N x K x D] / pi:[N x K] / sigma:[N x K x D]
 
     def init_param(self):
-        for m in self.modules():
-            # print(m)
-            if isinstance(m,nn.Conv2d): # init conv
-                nn.init.kaiming_normal_(m.weight)
-                # nn.init.zeros_(m.bias)
-            if isinstance(m,nn.Linear): # lnit dense
-                nn.init.kaiming_normal_(m.weight)
-                nn.init.zeros_(m.bias)
+        # for m in self.modules():
+        #     # print(m)
+        #     if isinstance(m,nn.Conv2d): # init conv
+        #         nn.init.kaiming_normal_(m.weight)
+        #         # nn.init.zeros_(m.bias)
+        #     if isinstance(m,nn.Linear): # lnit dense
+        #         nn.init.kaiming_normal_(m.weight)
+        #         nn.init.zeros_(m.bias)
         # Heuristic: fc_mu.bias ~ Uniform(mu_min,mu_max)
         self.mol.fc_mu.bias.data.uniform_(self.mu_min,self.mu_max)
         self.mol.fc_pi.bias.data.uniform_(-0.001,0.001)

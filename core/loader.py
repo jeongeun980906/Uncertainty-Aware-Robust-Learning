@@ -12,13 +12,16 @@ from collections import OrderedDict
 from torchvision import datasets,transforms
 from core.network import *
 from core.summary import *
+
 from dataloader.mnist import MNIST
 from dataloader.cifar import CIFAR10,CIFAR100
 from dataloader.cifar2 import cifar_dataset
 from dataloader.trec import TREC
 from dataloader.dirty_cifar import dirtyCIFAR10,cleanCIFAR10,ambiguousCIFAR10
+from dataloader.clothing1M import *
 from dataloader.dirty_mnist import DirtyMNIST,FastMNIST,AmbiguousMNIST
 from core.backbones.sentence_cnn import SentenceCNN
+import torchvision.models as models
 
 def build_model(args,device,trec_config=None):
     DATASET=args.data
@@ -30,6 +33,7 @@ def build_model(args,device,trec_config=None):
         summary_str,summary = summary_string(model,input_size=(1,28,28),device=device)
         print("network")
         print (summary_str)
+        model.init_param()
     elif DATASET == 'cifar10' or DATASET=='cifar100' or DATASET=='dirty_cifar10':
         labels=100 if DATASET=='cifar100' else 10
         if args.resnet:
@@ -46,6 +50,7 @@ def build_model(args,device,trec_config=None):
         # summary_str,summary = summary_string(model,input_size=(3,32,32),device=device)
         # print("network")
         # print (summary_str)
+        model.init_param()
     elif DATASET == 'trec':
         textcnn = SentenceCNN(nb_classes=6,
                         word_embedding_numpy=trec_config["initW"],
@@ -62,7 +67,18 @@ def build_model(args,device,trec_config=None):
                                 model      = textcnn,
                                 filter_counts = trec_config["filter_counts"],
                                 SHARE_SIG  = True).to(device)
-    model.init_param()
+        model.init_param()
+    elif DATASET == 'clothing1m':
+        # model= MixtureLogitNetwork_resnet(name='mln',x_dim=[3,224,224],
+        #                     sigma = args.sigma,k=args.k,y_dim =labels,
+        #                     sig_min=args.sig_min,sig_max=args.sig_max, 
+        #                     mu_min=-3,mu_max=+3,SHARE_SIG=True).to(device)
+        model =  models.resnet50(pretrained=True)
+        model.fc = MixtureOfLogits(in_dim=2048,y_dim=14,k=args.k,
+                        sig_min=args.sig_min,sig_max=args.sig_max, sigma = args.sigma,SHARE_SIG=True)
+        model.fc.fc_mu.bias.data.uniform_(-3,3)
+        model.fc.fc_pi.bias.data.uniform_(-0.001,0.001)
+        model = model.to(device)
     return model
 
 def build_dataset(args):
@@ -71,7 +87,7 @@ def build_dataset(args):
     if DATASET=='mnist':
         input_size=(-1,1,28,28)
         num_classes=10
-        if args.mode not in ['symmetric','asymmetric','fairflip','mixup']:
+        if args.mode not in ['symmetric','asymmetric','fairflip','mixup','instance']:
             num=int(args.mode[-1])
             train = MNIST(root='./data/',download=True,train=True,transform=transforms.ToTensor(),
                         noise_type='asymmetric2',noise_rate=args.ER,num=num)
@@ -101,7 +117,7 @@ def build_dataset(args):
         ])
         input_size=(-1,3,32,32)
         num_classes=10
-        if args.mode not in ['symmetric','asymmetric','fairflip']:
+        if args.mode not in ['symmetric','asymmetric','fairflip','clean','instance']:
             num=int(args.mode[-1])
             train = CIFAR10(root='./data/',download=True,train=True,transform=transform_train,
                         noise_type='asymmetric2',noise_rate=args.ER,num=num)
@@ -110,11 +126,11 @@ def build_dataset(args):
             test = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
                         noise_type='asymmetric2',noise_rate=args.ER,test_noisy=True,num=num)
         else:
-            train = cifar_dataset(dataset = 'cifar10',root_dir='./data/cifar-10-batches-py'
-                        ,mode='all',transform=transform_train,noise_file = './data/cifar10_noise_file_{}_{}'.format(args.mode,args.ER),
-                        noise_mode=args.mode,r=args.ER)
-            # train = CIFAR10(root='./data/',download=True,train=True,transform=transform_train,
-            #             noise_type=args.mode,noise_rate=args.ER)
+            # train = cifar_dataset(dataset = 'cifar10',root_dir='./data/cifar-10-batches-py'
+            #             ,mode='all',transform=transform_train,noise_file = './data/cifar10_noise_file_{}_{}'.format(args.mode,args.ER),
+            #             noise_mode=args.mode,r=args.ER)
+            train = CIFAR10(root='./data/',download=True,train=True,transform=transform_train,
+                        noise_type=args.mode,noise_rate=args.ER)
             val = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
                         noise_type=args.mode,noise_rate=args.ER,test_noisy=False)
             test = CIFAR10(root='./data/',download=True,train=False,transform=transform_test,
@@ -155,7 +171,48 @@ def build_dataset(args):
         }
         input_size=None
         num_classes=6
+    
+    elif DATASET=='clothing1m':
+        input_size=(-1,3,224,224)
+        num_classes=14
+        transition_matrix = None
+        num=2
+
+        transform_train = transforms.Compose([
+                transforms.Resize(256),
+                transforms.RandomCrop(224),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),                
+                transforms.Normalize((0.6959, 0.6537, 0.6371),(0.3113, 0.3192, 0.3214)),                     
+            ])    
+        transform_val = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize((0.6959, 0.6537, 0.6371),(0.3113, 0.3192, 0.3214)),
+            ])  
         
+
+
+        train = clothing1M(
+            root        = '/home/sungjoon.choi/seungyoun/Clothing1M',
+            transform   = transform_train,
+            mode        = 'train',
+            num_samples = 1000*args.batch_size
+        )
+
+        val = clothing1M(
+            root        = '/home/sungjoon.choi/seungyoun/Clothing1M',
+            transform   = transform_val,
+            mode        = 'test'
+        )
+        test = clothing1M(
+            root        = '/home/sungjoon.choi/seungyoun/Clothing1M',
+            transform   = transform_val,
+            mode        = 'test'
+        )
+        
+
     elif DATASET=='dirty_mnist':
         train = DirtyMNIST("./data/", train=True, download=True, device="cuda",noise_type=args.mode,noise_rate=args.ER)
         val = DirtyMNIST("./data/", train=False, download=True, device="cuda",noise_type='clean',noise_rate=args.ER,test_noisy=False)
@@ -194,10 +251,10 @@ def build_dataset(args):
     if DATASET != 'trec':
         BATCH_SIZE = args.batch_size
         if args.cross_validation:
-            train_iter = torch.utils.data.DataLoader(train,batch_size=BATCH_SIZE,shuffle=False,num_workers=0)
+            train_iter = torch.utils.data.DataLoader(train,batch_size=BATCH_SIZE,shuffle=False,num_workers=4)
         else:
-            train_iter = torch.utils.data.DataLoader(train,batch_size=BATCH_SIZE,shuffle=True,num_workers=0)
-        val_iter = torch.utils.data.DataLoader(val,batch_size=BATCH_SIZE,shuffle=False,num_workers=0)
+            train_iter = torch.utils.data.DataLoader(train,batch_size=BATCH_SIZE,shuffle=True,num_workers=4)
+        val_iter = torch.utils.data.DataLoader(val,batch_size=BATCH_SIZE,shuffle=False,num_workers=4)
         if test==None:
             transition_matrix=ambiguous_test.transition_matrix
             ambiguous_test_iter = torch.utils.data.DataLoader(

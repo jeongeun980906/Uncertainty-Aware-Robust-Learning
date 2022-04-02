@@ -10,7 +10,7 @@ else:
     import pickle
 
 import torch.utils.data as data
-from .utils import download_url, check_integrity, noisify
+from .utils import download_url, check_integrity, noisify,noisify_instance_dependent
 
 class CIFAR10(data.Dataset):
     """`CIFAR10 <https://www.cs.toronto.edu/~kriz/cifar.html>`_ Dataset.
@@ -92,12 +92,17 @@ class CIFAR10(data.Dataset):
             #if noise_type is not None:
             if noise_type !='clean':
                 # noisify train data
-                self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
-                self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, 
-                                                                        noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
-                self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
-                _train_labels=[i[0] for i in self.train_labels]
-                self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+                if noise_type != 'instance':
+                    self.train_labels=np.asarray([[self.train_labels[i]] for i in range(len(self.train_labels))])
+                    self.train_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.train_labels, noise_type=noise_type, 
+                                                                            noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
+                    self.train_noisy_labels=[i[0] for i in self.train_noisy_labels]
+                    _train_labels=[i[0] for i in self.train_labels]
+                    self.noise_or_not = np.transpose(self.train_noisy_labels)==np.transpose(_train_labels)
+                else:
+                    self.train_noisy_labels, self.noise_or_not = noisify_instance_dependent(self.train_data,self.train_labels,noise_rate = noise_rate,img_size=32*32*3)
+                    self.transition_matrix = None
+                    print('actual noise',self.noise_or_not)
         if indicies!= None:
             indicies = np.asarray(indicies,dtype=np.int64)
             self.train_data = self.train_data[indicies]
@@ -122,13 +127,17 @@ class CIFAR10(data.Dataset):
             self.test_data = self.test_data.transpose((0, 2, 3, 1))  # convert to HWC
             if test_noisy:
                 # noisify tesr data
-                self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
-                self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type,
-                                                                     noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
-                self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
-                _test_labels=[i[0] for i in self.test_labels]
-                self.noise_or_not = np.transpose(self.test_noisy_labels)==np.transpose(_test_labels)
-
+                if noise_type != 'instance':
+                    self.test_labels=np.asarray([[self.test_labels[i]] for i in range(len(self.test_labels))])
+                    self.test_noisy_labels, self.transition_matrix = noisify(dataset=self.dataset, train_labels=self.test_labels, noise_type=noise_type,
+                                                                        noise_rate=noise_rate, random_state=random_state, nb_classes=self.nb_classes,num=self.num)
+                    self.test_noisy_labels=[i[0] for i in self.test_noisy_labels]
+                    _test_labels=[i[0] for i in self.test_labels]
+                    self.noise_or_not = np.transpose(self.test_noisy_labels)==np.transpose(_test_labels)
+                else:
+                    self.test_noisy_labels, self.noise_or_not = noisify_instance_dependent(self.test_data,self.test_labels,noise_rate = noise_rate,img_size=32*32*3)
+                    self.transition_matrix = None
+                    print('actual noise',self.noise_or_not)
     def __getitem__(self, index):
         """
         Args:

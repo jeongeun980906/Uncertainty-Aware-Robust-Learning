@@ -50,15 +50,21 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         #optimizer = optim.Adam(filter(lambda p: p.requires_grad, MLN.parameters()), lr=args.lr, weight_decay=args.wd)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=args.lr_rate, step_size=10)
     elif args.data=='mnist' or args.data == 'dirty_mnist':
+        # optimizer = optim.SGD(MLN.parameters(),lr=args.lr,momentum=0.9,weight_decay=args.wd)
         optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
-        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[3,6,9,12,15,18], gamma=args.lr_rate)
+        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10,20], gamma=args.lr_rate)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=config['lr_step'])
+    elif args.data == 'clothing1m':
+        # optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
+        optimizer= optim.SGD(MLN.parameters(), lr=0.002, momentum=0.9, weight_decay=1e-3)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=config['lr_step'])
     else:
-        if args.resnet or args.mixup:
-            print('resnet')
-            optimizer = optim.SGD(MLN.parameters(),lr=args.lr,momentum=0.9,weight_decay=args.wd)
-        else:
-            optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
+        # if args.resnet or args.mixup:
+        #     print('SGD')
+        #     optimizer = optim.SGD(MLN.parameters(),lr=args.lr,momentum=0.9,weight_decay=args.wd)
+        # else:
+        # optimizer = optim.SGD(MLN.parameters(),lr=args.lr,momentum=0.9,weight_decay=args.wd)
+        optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
         #scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30,60,90,120,150,180], gamma=args.lr_rate)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=config['lr_step'])
     MLN.train()
@@ -67,40 +73,66 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
     for epoch in range(EPOCHS):
         loss_sum = 0.0
         #time.sleep(1)
-        for batch_in,batch_out in train_iter:
+        for e, (batch_in,batch_out) in enumerate(train_iter):
+            # print(e)
+            if e%100==0:
+                print(e)
             if args.mixup:
-                mixed_x, mixed_y= mixup_data(batch_in.to(device),batch_out.to(device)
+                batch_in, y1, y2, lam = mixup_data(batch_in.to(device),batch_out.to(device)
                                                     ,alpha=args.alpha)
-                batch_in = mixed_x
-                target = mixed_y
-                # print(target.shape)
-            # Forward path
-            if data_size==None:
-                mln_out = MLN.forward(batch_in.to(device))
-            else:
                 mln_out = MLN.forward(batch_in.view(data_size).to(device))
-                target = torch.eye(labels)[batch_out].to(device)
-                target=target.to(device)
-            # print(args.sigma)
-            if args.sigma:
+
+                target1 = torch.eye(labels)[y1].to(device)
+                target1=target1.to(device)
+
+                target2 = torch.eye(labels)[y2].to(device)
+                target2=target2.to(device)
+
                 pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
-                loss_out = mace_loss(pi,mu,sigma,target) # 'mace_avg','epis_avg','alea_avg'
-                loss = loss_out['mace_avg'] - ratio1*loss_out['epis_avg'] + ratio2*loss_out['alea_avg']
+                loss_out_1 = mace_loss(pi,mu,sigma,target1) # 'mace_avg','epis_avg','alea_avg'
+                loss_1 = loss_out_1['mace_avg'] - ratio1*loss_out_1['epis_avg'] + ratio2*loss_out_1['alea_avg']
+
+                loss_out_2 = mace_loss(pi,mu,sigma,target2) # 'mace_avg','epis_avg','alea_avg'
+                loss_2 = loss_out_2['mace_avg'] - ratio1*loss_out_2['epis_avg'] + ratio2*loss_out_2['alea_avg']
+                loss = lam*loss_1+(1-lam)*loss_2
+                loss_out = {
+                    'mace_avg': lam*loss_out_1['mace_avg'].item()+(1-lam)*loss_out_2['mace_avg'].item(),
+                    'epis_avg': lam*loss_out_1['epis_avg'].item()+(1-lam)*loss_out_2['epis_avg'].item(),
+                    'alea_avg': lam*loss_out_1['alea_avg'].item()+(1-lam)*loss_out_2['alea_avg'].item()
+                }
+                # print('flag3')
             else:
-                # print(mln_out['sigma'])
-                pi, mu = mln_out['pi'], mln_out['mu']
-                loss_out = mce_loss(pi,mu,target)
-                loss = loss_out['mce_avg'] #- ratio1*loss_out['epis_avg']
+                # Forward path
+                if data_size==None:
+                    mln_out = MLN.forward(batch_in.to(device))
+                else:
+                    mln_out = MLN.forward(batch_in.view(data_size).to(device))
+                    target = torch.eye(labels)[batch_out].to(device)
+                    target=target.to(device)
+            
+                if args.sigma:
+                    pi,mu,sigma = mln_out['pi'],mln_out['mu'],mln_out['sigma']
+                    loss_out = mace_loss(pi,mu,sigma,target) # 'mace_avg','epis_avg','alea_avg'
+                    loss = loss_out['mace_avg'] - ratio1*loss_out['epis_avg'] + ratio2*loss_out['alea_avg']
+                else:
+                    # print(mln_out['sigma'])
+                    pi, mu = mln_out['pi'], mln_out['mu']
+                    loss_out = mce_loss(pi,mu,target)
+                    loss = loss_out['mce_avg'] #- ratio1*loss_out['epis_avg']
+                    
             # Weight Decay Loss
+            # print('flag1')
             l2_reg = torch.tensor(0.)
             for param in MLN.parameters():
                 l2_reg += torch.norm(param).cpu()
             #print(loss)
+            # print('flag2')
             optimizer.zero_grad() # reset gradient
             loss.backward() # back-propagation
             optimizer.step() # optimizer update
             # Track losses
             loss_sum += loss
+            # print('flag3')
         scheduler.step()
         loss_avg = loss_sum/len(train_iter)
         train_res = func_eval(MLN,train_iter,data_size,device,use_sigma=args.sigma)
@@ -123,42 +155,43 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
 
     save_log_dict(args,train_acc,test_acc)
     plot_res_once(train_acc,test_acc,args,DIR)
-    if len(test_iter)==1:
-        print(ratio1,ratio2)
-        out = mln_transitionmatrix(MLN,test_iter[0],data_size,device
-                            ,dataset_config["num"],labels,use_sigma=args.sigma)
-        plot_tm_ccn(out,args,transition_matrix,labels)
-        var=avg_total_variance(out['D3'],transition_matrix)
-        rank=kendall_tau(out['D3'],transition_matrix)
-        strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
-        print_n_txt(_f=f,_chars=strtemp)
+    if args.mode != 'instance':
+        if len(test_iter)==1:
+            print(ratio1,ratio2)
+            out = mln_transitionmatrix(MLN,test_iter[0],data_size,device
+                                ,dataset_config["num"],labels,use_sigma=args.sigma)
+            plot_tm_ccn(out,args,transition_matrix,labels)
+            var=avg_total_variance(out['D3'],transition_matrix)
+            rank=kendall_tau(out['D3'],transition_matrix)
+            strtemp=('avarage total variance: [%.4f] kendalltau: [%.4f]'%(var,rank))
+            print_n_txt(_f=f,_chars=strtemp)
 
-    else:
-        N=dataset_config["num"]
-        clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,device)
-        ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,device)
-        auroc = plot_hist(clean_eval,ambiguous_eval,args)
-        strtemp=('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
-                    (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
-        print_n_txt(_f=f,_chars=strtemp)
-        indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
-        del test_iter
-        e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
-        out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cuda',N)
-        out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cuda',N)
-        
-        plot_tm_sdn(out1,out2,transition_matrix,args)
-        plot_alea_sdn(out1,out2,args)
+        else:
+            N=dataset_config["num"]
+            clean_eval = gather_uncertainty_sdn(MLN,test_iter[1],data_size,device)
+            ambiguous_eval=gather_uncertainty_sdn(MLN,test_iter[0],data_size,device)
+            auroc = plot_hist(clean_eval,ambiguous_eval,args)
+            strtemp=('auroc_alea: [%.4f] auroc_epis: [%.4f] auroc_pi_entropy: [%.4f] auroc_maxsoftmax: [%.4f] auroc_entropy: [%.4f]'%
+                        (auroc['alea_'],auroc['epis_'],auroc['pi_entropy_'],auroc['maxsoftmax_'],auroc['entropy_']))
+            print_n_txt(_f=f,_chars=strtemp)
+            indices_amb1,indices_clean1,indices_amb2,indices_clean2=get_th(clean_eval,ambiguous_eval)
+            del test_iter
+            e_amb_iter,e_clean_iter = get_estimated_dataset(indices_amb1,indices_clean1,indices_amb2,indices_clean2,args)
+            out1=mln_transitionmatrix(MLN,e_clean_iter,data_size,'cuda',N)
+            out2=mln_transitionmatrix(MLN,e_amb_iter,data_size,'cuda',N)
+            
+            plot_tm_sdn(out1,out2,transition_matrix,args)
+            plot_alea_sdn(out1,out2,args)
 
-        var=avg_total_variance(out1['D3'],np.eye(labels))
-        rank=kendall_tau(out1['D3'],np.eye(labels))
-        strtemp = ('avarage total variance_clean: {} kendalltau_clean {}'.format(var,rank))
-        print_n_txt(_f=f,_chars=strtemp)
+            var=avg_total_variance(out1['D3'],np.eye(labels))
+            rank=kendall_tau(out1['D3'],np.eye(labels))
+            strtemp = ('avarage total variance_clean: {} kendalltau_clean {}'.format(var,rank))
+            print_n_txt(_f=f,_chars=strtemp)
 
-        var=avg_total_variance(out2['D3'],transition_matrix)
-        rank=kendall_tau(out2['D3'],transition_matrix)
-        strtemp = ('avarage total variance_ambiguous: {} kendalltau_ambiguous {}'.format(var,rank))
-        print_n_txt(_f=f,_chars=strtemp)
+            var=avg_total_variance(out2['D3'],transition_matrix)
+            rank=kendall_tau(out2['D3'],transition_matrix)
+            strtemp = ('avarage total variance_ambiguous: {} kendalltau_ambiguous {}'.format(var,rank))
+            print_n_txt(_f=f,_chars=strtemp)
 
 
 def test(args,test_iter,MLN,config,dataset_config):

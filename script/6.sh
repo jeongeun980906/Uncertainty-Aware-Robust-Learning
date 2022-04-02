@@ -1,8 +1,14 @@
 cd ..
-python main.py --data cifar10 --ER 0.5 --lr 2e-2 --gpu 5 --ratio 1 --id 114 --k 20 --lr_rate 0.1 --lr_step 150 --mixup --alpha 4 --epoch 500 --batch_size 64
-python main.py --data cifar10 --ER 0.5 --lr 2e-2 --gpu 5 --ratio 0.5 --id 115 --k 20 --lr_rate 0.1 --lr_step 150 --mixup --alpha 4 --epoch 500 --batch_size 64
+python main.py --data cifar10 --ER 0.5 --lr 1e-3 --wd 1e-4 --ratio 1 --ratio2 1 --sig_max 2 --sig_min 1 --lr_rate 0.1 --k 20 --lr_step 50 --id 31 --mixup --alpha 4 --gpu 2
+python main.py --data cifar10 --ER 0.5--lr 1e-3 --wd 1e-4 --ratio 1 --ratio2 1 --sig_max 1 --sig_min 0.1 --lr_rate 0.1 --k 20 --lr_step 50 --id 32 --mixup --alpha 4 --gpu 2
 
-# python main.py --data cifar10 --ER 0.5 --lr 5e-3 --sigma --gpu 5 --ratio 0 --id 62 --k 5 --lr_rate 0.5 --mixup --alpha 4 --epoch 500 --batch_size 256
+python main.py --data cifar10 --ER 0.8 --lr 1e-3 --wd 1e-4 --ratio 1 --ratio2 1 --sig_max 2 --sig_min 1 --lr_rate 0.1 --k 20 --lr_step 50 --id 31 --mixup --alpha 4 --gpu 2
+python main.py --data cifar10 --ER 0.8 --lr 1e-3 --wd 1e-4 --ratio 1 --ratio2 1 --sig_max 1 --sig_min 0.1 --lr_rate 0.1 --k 20 --lr_step 50 --id 32 --mixup --alpha 4 --gpu 2
+
+# python main.py --data cifar10 --ER 0.5 --lr 2e-2 --gpu 5 --ratio 1 --id 114 --k 20 --lr_rate 0.1 --lr_step 150 --mixup --alpha 4 --epoch 500 --batch_size 64
+# python main.py --data cifar10 --ER 0.5 --lr 2e-2 --gpu 5 --ratio 0.5 --id 115 --k 20 --lr_rate 0.1 --lr_step 150 --mixup --alpha 4 --epoch 500 --batch_size 64
+
+# # python main.py --data cifar10 --ER 0.5 --lr 5e-3 --sigma --gpu 5 --ratio 0 --id 62 --k 5 --lr_rate 0.5 --mixup --alpha 4 --epoch 500 --batch_size 256
 # python main.py --data cifar10 --ER 0.5 --lr 5e-3 --sigma --gpu 5 --ratio 0.1 --id 53 --k 5 --lr_rate 0.5 --mixup --alpha 4 --epoch 500 --batch_size 64
 # python main.py --data cifar10 --ER 0.5 --lr 5e-3 --sigma --gpu 5 --ratio 0 --id 42 --k 5 --lr_rate 0.5 --mixup --alpha 4 --epoch 500
 
