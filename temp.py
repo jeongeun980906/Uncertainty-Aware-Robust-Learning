@@ -1,11 +1,11 @@
 import json
 import numpy as np
 
-DATA = 'cifar10_'#'mnist_'
-noise = ['instance_0.2','instance_0.4']
-#['symmetric_0.2','symmetric_0.5','symmetric_0.8','asymmetric_0.4']  
+DATA = 'clothing1m_'#'mnist_'
+noise = ['symmetric_0.2']#,'symmetric_0.5','symmetric_0.8','asymmetric_0.4']   #['instance_0.2','instance_0.4']
+#
  
-ID = 13
+ID = 12
 for n in noise:
     DIR_PATH='./res/'+DATA+n+'/'+str(ID)+'_log.json'
     try:

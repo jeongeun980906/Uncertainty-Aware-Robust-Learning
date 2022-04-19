@@ -204,7 +204,7 @@ def build_dataset(args):
         val = clothing1M(
             root        = '/home/sungjoon.choi/seungyoun/Clothing1M',
             transform   = transform_val,
-            mode        = 'test'
+            mode        = 'val'
         )
         test = clothing1M(
             root        = '/home/sungjoon.choi/seungyoun/Clothing1M',
@@ -274,7 +274,7 @@ def build_dataset(args):
             test_iter=[ambiguous_test_iter,clean_test_iter]
         else:
             transition_matrix=test.transition_matrix
-            test_iter = [torch.utils.data.DataLoader(test,batch_size=BATCH_SIZE,shuffle=True,num_workers=0)]
+            test_iter = [torch.utils.data.DataLoader(test,batch_size=BATCH_SIZE,shuffle=False,num_workers=0)]
         trec_config=None
     else:
         test_iter = [test_iter]

@@ -268,7 +268,7 @@ class clothing1M(Dataset):
         
         elif mode=='val':
             self.val_imgs = []
-            with open('%s/clean_val_key_list.txt'%self.root,'r') as f:
+            with open('%s/clean_test_key_list.txt'%self.root,'r') as f:
                 lines = f.read().splitlines()
                 for l in lines:
                     fnum = l.split("/")[1]
@@ -289,7 +289,7 @@ class clothing1M(Dataset):
             target = self.test_labels[img_path]     
             image = Image.open(img_path).convert('RGB')   
             img = self.transform(image) 
-            return img, target
+            return img, target, index
         elif self.mode=='val':
             img_path = self.val_imgs[index]
             target = self.test_labels[img_path]     

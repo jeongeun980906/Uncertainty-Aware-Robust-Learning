@@ -56,7 +56,7 @@ def train(args,train_iter,val_iter,test_iter,MLN,config,dataset_config):
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=config['lr_step'])
     elif args.data == 'clothing1m':
         # optimizer = optim.Adam(MLN.parameters(),lr=args.lr,weight_decay=args.wd,eps=1e-8)
-        optimizer= optim.SGD(MLN.parameters(), lr=0.002, momentum=0.9, weight_decay=1e-3)
+        optimizer= optim.SGD(MLN.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.wd)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, gamma=config['lr_rate'], step_size=config['lr_step'])
     else:
         # if args.resnet or args.mixup:

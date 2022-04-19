@@ -112,8 +112,10 @@ def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10,use_sigma
         D3=np.zeros((label,label))
         confusion_matrix = np.zeros((label,label))
         sigma_out={}
+        epis_out = {}
         for i in range(label):
             sigma_out[str(i)]=list()
+            epis_out[str(i)]=list()
         for batch_in,batch_out in data_iter:
             # Foraward path
             if data_size is None:
@@ -136,10 +138,11 @@ def mln_transitionmatrix(model,data_iter,data_size,device,num,label=10,use_sigma
                 D2[y[i].item()] +=mu_sel2[i].cpu().numpy()
                 D3[y[i].item()] +=mu_prime[i].cpu().numpy()
                 sigma_out[str(y[i].item())].append(unct_out['alea'][i].cpu().numpy().tolist())
+                epis_out[str(y[i].item())].append(unct_out['epis'][i].cpu().numpy().tolist())
                 confusion_matrix[y[i].item(),batch_out[i].item()]+=1
         model.train() # back to train mode 
         out_eval = {'D1':D1,'D2':D2,'D3':D3,
-                    'sigma':sigma_out,'confusion_matrix':confusion_matrix}
+                    'sigma':sigma_out,'confusion_matrix':confusion_matrix,'epis':epis_out}
     return out_eval
 
 def get_th(clean_eval,ambiguous_eval):
